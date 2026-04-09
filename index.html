@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AntoMatic — Proyecto 1: Descripción del Problema</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    background: #fff;
+    color: #000;
+    padding: 20px;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    border: 2px solid #000;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  header .brand {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #555;
+  }
+
+  header h1 {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 3px 0 2px;
+    font-family: Arial, sans-serif;
+  }
+
+  header p {
+    font-size: 11px;
+    color: #555;
+  }
+
+  .header-badge {
+    background: #000;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 4px 10px;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  /* ===== INPUT SECTION ===== */
+  .input-section {
+    border: 1px solid #000;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .input-section h2 {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+  }
+
+  .input-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 7px 12px;
+    align-items: center;
+  }
+
+  .input-grid label {
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+  }
+
+  .input-grid input,
+  .input-grid select {
+    background: #cfe2f3;
+    border: 1px solid #999;
+    padding: 5px 7px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    width: 100%;
+    color: #000;
+    transition: background .15s, border-color .15s;
+  }
+
+  .input-grid input:focus,
+  .input-grid select:focus {
+    outline: 2px solid #3c78d8;
+    background: #daeeff;
+  }
+
+  .input-grid input.invalid {
+    background: #ffe0e0;
+    border-color: #c00;
+  }
+
+  .hint {
+    font-size: 10px;
+    color: #666;
+    grid-column: 2;
+    margin-top: -4px;
+    font-family: Arial, sans-serif;
+  }
+
+  .input-divider {
+    grid-column: 1 / -1;
+    border: none;
+    border-top: 1px dashed #bbb;
+    margin: 4px 0;
+  }
+
+  /* ===== VALIDATION BAR ===== */
+  #validBar {
+    display: none;
+    background: #fff3cd;
+    border: 1px solid #e6a817;
+    border-left: 4px solid #e6a817;
+    padding: 7px 12px;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    margin-bottom: 16px;
+    color: #7a4f00;
+  }
+
+  #validBar.ok {
+    background: #eaffea;
+    border-color: #2a7a2a;
+    border-left-color: #2a7a2a;
+    color: #1a5c1a;
+  }
+
+  /* ===== OUTPUT SECTIONS ===== */
+  .output-section {
+    margin-bottom: 14px;
+    border: 1px solid #000;
+  }
+
+  .sec-header {
+    background: #000;
+    color: #fff;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sec-header .num {
+    font-size: 16px;
+    font-weight: bold;
+    min-width: 20px;
+  }
+
+  .sec-title-text { flex: 1; }
+
+  .sec-badge {
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: .07em;
+    padding: 2px 6px;
+    border: 1px solid #fff;
+    white-space: nowrap;
+  }
+
+  .sec-badge.mundial  { border-color: #6af; color: #6af; }
+  .sec-badge.nacional { border-color: #afa; color: #afa; }
+  .sec-badge.regional { border-color: #fa6; color: #fa6; }
+  .sec-badge.teoria   { border-color: #e9e; color: #e9e; }
+  .sec-badge.redaccion{ border-color: #ff9; color: #ff9; }
+
+  .output-body { padding: 10px 12px; }
+
+  .section-instruction {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    background: #f0f0f0;
+    border-left: 3px solid #000;
+    padding: 5px 8px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .output-row {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: 5px 10px;
+    margin-bottom: 6px;
+    align-items: center;
+  }
+
+  .output-label {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: #444;
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  .output-value {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    padding: 5px 7px;
+    font-size: 11.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-height: 28px;
+  }
+
+  .output-value span {
+    flex: 1;
+    word-break: break-all;
+    line-height: 1.4;
+  }
+
+  .copy-btn {
+    background: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 3px 7px;
+    white-space: nowrap;
+    font-family: Arial, sans-serif;
+    flex-shrink: 0;
+    transition: background .1s;
+  }
+
+  .copy-btn:hover { background: #444; }
+  .copy-btn.done  { background: #2a7a2a; }
+
+  .open-btn {
+    background: #fff;
+    color: #000;
+    border: 1px solid #999;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 3px 7px;
+    white-space: nowrap;
+    font-family: Arial, sans-serif;
+    flex-shrink: 0;
+    text-decoration: none;
+    display: inline-block;
+    transition: background .1s;
+  }
+
+  .open-btn:hover { background: #e8e8e8; }
+
+  hr.inner {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 8px 0;
+  }
+
+  .note {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    color: #666;
+    margin: 2px 0 4px;
+    line-height: 1.4;
+  }
+
+  /* NYT paywall note — más visible */
+  .paywall-note {
+    font-family: Arial, sans-serif;
+    font-size: 10.5px;
+    color: #7a4f00;
+    background: #fff8e1;
+    border: 1px solid #e6a817;
+    border-left: 3px solid #e6a817;
+    padding: 4px 8px;
+    margin: -2px 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .paywall-note::before {
+    content: "⚠";
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  /* Tarea 5 — redacción propia */
+  .manual-box {
+    background: #fffde7;
+    border: 1px dashed #bbb;
+    padding: 10px 12px;
+    font-family: Arial, sans-serif;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .manual-box strong { color: #000; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid #ddd;
+    margin-top: 24px;
+    padding-top: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    color: #aaa;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div>
+    <div class="brand">AntoMatic Tools · UNASAM</div>
+    <h1>Proyecto 1 — Descripción del Problema</h1>
+    <p>Introducción · Antecedentes de la problemática · Marco conceptual</p>
+  </div>
+  <div class="header-badge">v2.0</div>
+</header>
+
+<!-- ===== VALIDATION BAR ===== -->
+<div id="validBar">Completa los campos obligatorios marcados en rojo para activar todas las ecuaciones.</div>
+
+<!-- ===== INPUTS ===== -->
+<div class="input-section">
+  <h2>Datos de entrada — campos celestes</h2>
+  <div class="input-grid">
+
+    <label><b>Variable principal</b> (si es &gt;1 palabra, usa "…"):</label>
+    <input type="text" id="var1" placeholder='"desempeño laboral"' oninput="update()">
+    <span></span><span class="hint">Ejemplo: <i>"desempeño laboral"</i> &nbsp;|&nbsp; En español</span>
+
+    <label>Sinónimo en español:</label>
+    <input type="text" id="var1syn" placeholder='"rendimiento laboral"' oninput="update()">
+    <span></span><span class="hint">Ejemplo: <i>"rendimiento laboral"</i></span>
+
+    <hr class="input-divider"><hr class="input-divider">
+
+    <label>Variable principal <b>en inglés</b>:</label>
+    <input type="text" id="var1en" placeholder='"work performance"' oninput="update()">
+    <span></span><span class="hint">Ejemplo: <i>"work performance"</i></span>
+
+    <label>Sinónimo en inglés:</label>
+    <input type="text" id="var1enSyn" placeholder='"job performance"' oninput="update()">
+    <span></span><span class="hint">Ejemplo: <i>"job performance"</i></span>
+
+    <hr class="input-divider"><hr class="input-divider">
+
+    <label>Otras variables (separadas por coma):</label>
+    <input type="text" id="otrasVars" placeholder='variable2, variable3, variable4' oninput="update()">
+    <span></span><span class="hint">En español, separadas por coma</span>
+
+    <label>Otras variables <b>en inglés</b>:</label>
+    <input type="text" id="otrasVarsEn" placeholder='variable2En, variable3En' oninput="update()">
+    <span></span><span class="hint">En inglés, separadas por coma</span>
+
+    <hr class="input-divider"><hr class="input-divider">
+
+    <label>Sector / tipo de organización:</label>
+    <select id="sector" onchange="update()">
+      <option value="la empresa">la empresa</option>
+      <option value="gestión pública">gestión pública</option>
+      <option value="las municipalidades">las municipalidades</option>
+      <option value="la universidad">la universidad</option>
+      <option value="los negocios">los negocios</option>
+      <option value="comercio electrónico">comercio electrónico</option>
+      <option value="salud">salud</option>
+      <option value="educación superior">educación superior</option>
+      <option value="el sector financiero">el sector financiero</option>
+      <option value="retail">retail</option>
+      <option value="turismo">turismo</option>
+    </select>
+
+    <label>Sector <b>en inglés</b>:</label>
+    <select id="sectorEn" onchange="update()">
+      <option value="organizations">organizations</option>
+      <option value="companies">companies</option>
+      <option value="public management">public management</option>
+      <option value="universities">universities</option>
+      <option value="e-commerce">e-commerce</option>
+      <option value="healthcare organizations">healthcare organizations</option>
+      <option value="higher education">higher education</option>
+      <option value="financial organizations">financial organizations</option>
+      <option value="retail companies">retail companies</option>
+      <option value="tourism organizations">tourism organizations</option>
+    </select>
+
+    <hr class="input-divider"><hr class="input-divider">
+
+    <label>Nombre de la institución:</label>
+    <input type="text" id="institucion" placeholder='Municipalidad Provincial de Huaraz' oninput="update()">
+
+    <label>Región / Departamento:</label>
+    <input type="text" id="region" placeholder='Áncash' oninput="update()">
+    <span></span><span class="hint">Usado en búsquedas de nivel regional</span>
+
+    <label>DOI del modelo de investigación <span style="font-weight:normal">(opcional)</span>:</label>
+    <input type="text" id="doi" placeholder='https://doi.org/10.1016/...' oninput="update()">
+
+  </div>
+</div>
+
+<!-- ===== OUTPUT 1: DEFINICIÓN TEÓRICA ===== -->
+<div class="output-section">
+  <div class="sec-header">
+    <span class="num">1</span>
+    <span class="sec-title-text" id="tarea1">Definición teórica de la variable principal</span>
+    <span class="sec-badge teoria">Teoría</span>
+  </div>
+  <div class="output-body">
+    <p class="section-instruction">Busca la definición en las fuentes académicas. Al finalizar el párrafo pega el link de la fuente como referencia.</p>
+    <div class="output-row">
+      <span class="output-label">Google Scholar</span>
+      <div class="output-value"><span id="q_scholar"></span><button class="copy-btn" onclick="copyEl('q_scholar',this)">Copiar</button><a class="open-btn" id="link_scholar" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">ScienceDirect</span>
+      <div class="output-value"><span id="q_science"></span><button class="copy-btn" onclick="copyEl('q_science',this)">Copiar</button><a class="open-btn" id="link_science" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Scopus</span>
+      <div class="output-value"><span id="q_scopus"></span><button class="copy-btn" onclick="copyEl('q_scopus',this)">Copiar</button><a class="open-btn" id="link_scopus" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">MS Copilot</span>
+      <div class="output-value"><span id="q_copilot"></span><button class="copy-btn" onclick="copyEl('q_copilot',this)">Copiar</button><a class="open-btn" href="https://copilot.microsoft.com" target="_blank">Abrir</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OUTPUT 2: NIVEL MUNDIAL ===== -->
+<div class="output-section">
+  <div class="sec-header">
+    <span class="num">2</span>
+    <span class="sec-title-text" id="tarea2">Situación a nivel mundial</span>
+    <span class="sec-badge mundial">Mundial</span>
+  </div>
+  <div class="output-body">
+    <p class="section-instruction">Usa 2 o 3 fuentes. Copia la ecuación, busca en Chrome y pega el link al final del párrafo redactado.</p>
+    <div class="output-row">
+      <span class="output-label">América Economía</span>
+      <div class="output-value"><span id="q_ae"></span><button class="copy-btn" onclick="copyEl('q_ae',this)">Copiar</button><a class="open-btn" id="link_ae" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">The New York Times</span>
+      <div class="output-value"><span id="q_nyt"></span><button class="copy-btn" onclick="copyEl('q_nyt',this)">Copiar</button><a class="open-btn" id="link_nyt" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="paywall-note">Puede eludir el paywall del NYT presionando <b>ESC</b> o la <b>"X"</b> del navegador antes de que la página cargue completamente.</div>
+    <div class="output-row">
+      <span class="output-label">BBC Mundo</span>
+      <div class="output-value"><span id="q_bbc"></span><button class="copy-btn" onclick="copyEl('q_bbc',this)">Copiar</button><a class="open-btn" id="link_bbc" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">GALLUP <span style="font-size:10px">(RRHH)</span></span>
+      <div class="output-value"><span id="q_gallup"></span><button class="copy-btn" onclick="copyEl('q_gallup',this)">Copiar</button><a class="open-btn" id="link_gallup" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Deutsche Welle</span>
+      <div class="output-value"><span id="q_dw"></span><button class="copy-btn" onclick="copyEl('q_dw',this)">Copiar</button><a class="open-btn" id="link_dw" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <hr class="inner">
+    <div class="output-row">
+      <span class="output-label">OMS <span style="font-size:10px">(Salud / Psicología Org.)</span></span>
+      <div class="output-value"><span id="q_oms"></span><button class="copy-btn" onclick="copyEl('q_oms',this)">Copiar</button><a class="open-btn" id="link_oms" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">OIT — inglés <span style="font-size:10px">(RRHH / Org.)</span></span>
+      <div class="output-value"><span id="q_ilo_en"></span><button class="copy-btn" onclick="copyEl('q_ilo_en',this)">Copiar</button><a class="open-btn" id="link_ilo_en" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">OIT — español <span style="font-size:10px">(RRHH / Org.)</span></span>
+      <div class="output-value"><span id="q_ilo_es"></span><button class="copy-btn" onclick="copyEl('q_ilo_es',this)">Copiar</button><a class="open-btn" id="link_ilo_es" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">ECOMMERCE NEWS <span style="font-size:10px">(E-commerce / Marketing)</span></span>
+      <div class="output-value"><span id="q_ecnews"></span><button class="copy-btn" onclick="copyEl('q_ecnews',this)">Copiar</button><a class="open-btn" id="link_ecnews" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Statista <span style="font-size:10px">(Datos / Marketing)</span></span>
+      <div class="output-value"><span id="q_statista"></span><button class="copy-btn" onclick="copyEl('q_statista',this)">Copiar</button><a class="open-btn" id="link_statista" href="#" target="_blank">Abrir</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OUTPUT 3: NIVEL NACIONAL ===== -->
+<div class="output-section">
+  <div class="sec-header">
+    <span class="num">3</span>
+    <span class="sec-title-text" id="tarea3">Situación a nivel nacional (Perú)</span>
+    <span class="sec-badge nacional">Nacional</span>
+  </div>
+  <div class="output-body">
+    <p class="section-instruction">Busca en Chrome. Cita la fuente al final del párrafo redactado.</p>
+    <div class="output-row">
+      <span class="output-label">Actualidad Empresarial</span>
+      <div class="output-value"><span id="q_ae2"></span><button class="copy-btn" onclick="copyEl('q_ae2',this)">Copiar</button><a class="open-btn" id="link_ae2" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">El Peruano</span>
+      <div class="output-value"><span id="q_peruano"></span><button class="copy-btn" onclick="copyEl('q_peruano',this)">Copiar</button><a class="open-btn" id="link_peruano" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Mercado Negro <span style="font-size:10px">(Marketing)</span></span>
+      <div class="output-value"><span id="q_mn"></span><button class="copy-btn" onclick="copyEl('q_mn',this)">Copiar</button><a class="open-btn" id="link_mn" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Peru Retail <span style="font-size:10px">(Marketing / E-com.)</span></span>
+      <div class="output-value"><span id="q_pr"></span><button class="copy-btn" onclick="copyEl('q_pr',this)">Copiar</button><a class="open-btn" id="link_pr" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Mundo Empresarial</span>
+      <div class="output-value"><span id="q_me"></span><button class="copy-btn" onclick="copyEl('q_me',this)">Copiar</button><a class="open-btn" id="link_me" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Gestión</span>
+      <div class="output-value"><span id="q_gestion"></span><button class="copy-btn" onclick="copyEl('q_gestion',this)">Copiar</button><a class="open-btn" id="link_gestion" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">INEI <span style="font-size:10px">(datos estadísticos)</span></span>
+      <div class="output-value"><span id="q_inei"></span><button class="copy-btn" onclick="copyEl('q_inei',this)">Copiar</button><a class="open-btn" id="link_inei" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Peru Quiosco <span style="font-size:10px">(suscripción)</span></span>
+      <div class="output-value" style="font-style:italic;color:#555;font-family:Arial,sans-serif;font-size:11px">Servicio de suscripción — solicitarlo a Antonio Lirio.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OUTPUT 3b: NIVEL REGIONAL/LOCAL ===== -->
+<div class="output-section">
+  <div class="sec-header">
+    <span class="num">3b</span>
+    <span class="sec-title-text" id="tarea3b">Situación a nivel regional / local</span>
+    <span class="sec-badge regional">Regional</span>
+  </div>
+  <div class="output-body">
+    <p class="section-instruction">Nivel regional y local. Complementa con datos del INEI por región, noticias locales o informes de la propia institución.</p>
+    <div class="output-row">
+      <span class="output-label">Diario La República <span style="font-size:10px">(Áncash / región)</span></span>
+      <div class="output-value"><span id="q_rep"></span><button class="copy-btn" onclick="copyEl('q_rep',this)">Copiar</button><a class="open-btn" id="link_rep" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Diario El Comercio <span style="font-size:10px">(región)</span></span>
+      <div class="output-value"><span id="q_comercio"></span><button class="copy-btn" onclick="copyEl('q_comercio',this)">Copiar</button><a class="open-btn" id="link_comercio" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">RPP Noticias <span style="font-size:10px">(regional)</span></span>
+      <div class="output-value"><span id="q_rpp"></span><button class="copy-btn" onclick="copyEl('q_rpp',this)">Copiar</button><a class="open-btn" id="link_rpp" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">INEI — datos regionales</span>
+      <div class="output-value"><span id="q_inei_reg"></span><button class="copy-btn" onclick="copyEl('q_inei_reg',this)">Copiar</button><a class="open-btn" id="link_inei_reg" href="#" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Google — búsqueda local</span>
+      <div class="output-value"><span id="q_local"></span><button class="copy-btn" onclick="copyEl('q_local',this)">Copiar</button><a class="open-btn" id="link_local" href="#" target="_blank">Abrir</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OUTPUT 4: IMPORTANCIA / ORIGEN ===== -->
+<div class="output-section">
+  <div class="sec-header">
+    <span class="num">4</span>
+    <span class="sec-title-text" id="tarea4">Importancia, contribución u origen de la variable principal en las organizaciones</span>
+    <span class="sec-badge teoria">Teoría</span>
+  </div>
+  <div class="output-body">
+    <p class="section-instruction">Elige <b>solo una</b> de las tres alternativas. Copia la pregunta, pégala en ChatGPT y cita al final del párrafo.</p>
+    <div class="output-row">
+      <span class="output-label">Contribución (ChatGPT)</span>
+      <div class="output-value"><span id="q_contrib"></span><button class="copy-btn" onclick="copyEl('q_contrib',this)">Copiar</button><a class="open-btn" href="https://chat.openai.com" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Importancia (ChatGPT)</span>
+      <div class="output-value"><span id="q_import"></span><button class="copy-btn" onclick="copyEl('q_import',this)">Copiar</button><a class="open-btn" href="https://chat.openai.com" target="_blank">Abrir</a></div>
+    </div>
+    <div class="output-row">
+      <span class="output-label">Origen (ChatGPT)</span>
+      <div class="output-value"><span id="q_origin"></span><button class="copy-btn" onclick="copyEl('q_origin',this)">Copiar</button><a class="open-btn" href="https://chat.openai.com" target="_blank">Abrir</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OUTPUT 5: SÍNTOMAS ===== -->
+<div class="output-section">
+  <div class="sec-header">
+    <span class="num">5</span>
+    <span class="sec-title-text" id="tarea5_head">Síntomas del problema</span>
+    <span class="sec-badge redaccion">Redacción propia</span>
+  </div>
+  <div class="output-body">
+    <div class="manual-box" id="tarea5_inst">
+      Describe cómo <strong>[otras variables]</strong> están incidiendo en <strong>[variable principal]</strong> en <strong>[institución]</strong>.<br><br>
+      Escríbelo con carácter <b>no concluyente</b> (esbozo de la situación, no diagnóstico definitivo). Puede tener connotación negativa o positiva.<br><br>
+      <span style="font-size:11px;color:#666">✏️ Este párrafo lo redactas tú personalmente en MS Word o Google Docs.</span>
+    </div>
+  </div>
+</div>
+
+<footer>AntoMatic Tools v2.0 · UNASAM EPG &amp; E.P. Administración · Tomar con precaución</footer>
+
+<script>
+  function v(id){ return document.getElementById(id).value.trim(); }
+  function enc(s){ return encodeURIComponent(s); }
+
+  function update(){
+    const var1    = v('var1')    || '"variable1"';
+    const var1syn = v('var1syn') || '"sinónimo1"';
+    const var1en  = v('var1en')  || '"variable1en"';
+    const var1enS = v('var1enSyn') || '"synonym1en"';
+    const otras   = v('otrasVars')   || 'variable2, variable3';
+    const otrasEn = v('otrasVarsEn') || 'variable2En, variable3En';
+    const sector  = v('sector')  || 'la empresa';
+    const sectEn  = v('sectorEn') || 'organizations';
+    const inst    = v('institucion') || 'la institución';
+    const region  = v('region')  || 'Áncash';
+
+    // Validación visual
+    validar();
+
+    // ——— Headers ———
+    setH('tarea1', `Definición teórica de <i>${var1}</i>`);
+    setH('tarea2', `Situación a nivel mundial respecto a ${var1} — conectar con: <i>${otras}</i>`);
+    setH('tarea3', `Situación a nivel nacional (Perú) respecto a ${var1}`);
+    setH('tarea3b', `Situación a nivel regional / local respecto a ${var1} — ${region}`);
+    setH('tarea4', `Importancia, contribución u origen de <i>${var1}</i> en ${sector}`);
+    setH('tarea5_head', `Síntomas del problema en ${inst}`);
+    setH('tarea5_inst',
+      `Describe cómo <strong>${otras}</strong> están incidiendo en <strong>${var1}</strong> en <strong>${inst}</strong>.<br><br>
+       Escríbelo con carácter <b>no concluyente</b> (esbozo de la situación, no diagnóstico definitivo). Puede tener connotación negativa o positiva.<br><br>
+       <span style="font-size:11px;color:#666">✏️ Este párrafo lo redactas tú personalmente en MS Word o Google Docs.</span>`
+    );
+
+    // ——— 1. Definición teórica ———
+    const qSch  = `(define OR concept OR definition) AND (${var1} OR ${var1syn}) OR (${var1en} OR ${var1enS})`;
+    const qSci  = `define ${var1en} OR ${var1enS}`;
+    const qScop = `TITLE-ABS-KEY ( ${var1en} OR ${var1enS} ) AND ( definition OR concept OR theory )`;
+    const qCop  = `Define "${var1en}" with citation and academic reference in APA format`;
+
+    setQ('q_scholar', qSch);   setA('link_scholar', `https://scholar.google.com/scholar?q=${enc(qSch)}`);
+    setQ('q_science', qSci);   setA('link_science', `https://www.sciencedirect.com/search?qs=${enc(qSci)}`);
+    setQ('q_scopus',  qScop);  setA('link_scopus',  `https://www.scopus.com/search/form.uri#basic`);
+    setQ('q_copilot', qCop);
+
+    // ——— 2. Mundial ———
+    const qAE      = `site:americaeconomia.com/ ${var1} OR ${var1syn} after:2022`;
+    const qNYT     = `site:nytimes.com/ ${var1en} OR ${var1enS} after:2022`;
+    const qBBC     = `site:bbc.com/mundo/ ${var1} OR ${var1syn} after:2022`;
+    const qGallup  = `site:gallup.com/workplace/ ${var1en} OR ${var1enS} after:2022`;
+    const qDW      = `site:dw.com/ ${var1} OR ${var1syn} after:2022`;
+    const qOMS     = `site:who.int/es/ ${var1} OR ${var1syn}`;
+    const qILOen   = `site:ilo.org/ ${var1en} OR ${var1enS} after:2022`;
+    const qILOes   = `site:ilo.org/ ${var1} OR ${var1syn} after:2022`;
+    const qECnews  = `site:ecommercenews.pe/ ${var1} OR ${var1syn} after:2022`;
+    const qStatist = `${var1en} statistics ${new Date().getFullYear()} site:statista.com`;
+
+    setQ('q_ae',      qAE);      setA('link_ae',      `https://www.google.com/search?q=${enc(qAE)}`);
+    setQ('q_nyt',     qNYT);     setA('link_nyt',     `https://www.google.com/search?q=${enc(qNYT)}`);
+    setQ('q_bbc',     qBBC);     setA('link_bbc',     `https://www.google.com/search?q=${enc(qBBC)}`);
+    setQ('q_gallup',  qGallup);  setA('link_gallup',  `https://www.google.com/search?q=${enc(qGallup)}`);
+    setQ('q_dw',      qDW);      setA('link_dw',      `https://www.google.com/search?q=${enc(qDW)}`);
+    setQ('q_oms',     qOMS);     setA('link_oms',     `https://www.google.com/search?q=${enc(qOMS)}`);
+    setQ('q_ilo_en',  qILOen);   setA('link_ilo_en',  `https://www.google.com/search?q=${enc(qILOen)}`);
+    setQ('q_ilo_es',  qILOes);   setA('link_ilo_es',  `https://www.google.com/search?q=${enc(qILOes)}`);
+    setQ('q_ecnews',  qECnews);  setA('link_ecnews',  `https://www.google.com/search?q=${enc(qECnews)}`);
+    setQ('q_statista',qStatist); setA('link_statista',`https://www.google.com/search?q=${enc(qStatist)}`);
+
+    // ——— 3. Nacional ———
+    const qAE2     = `site:actualidadempresarial.pe/ ${var1} OR ${var1syn}`;
+    const qPeruano = `site:elperuano.pe/ ${var1} OR ${var1syn} after:2022`;
+    const qMN      = `site:mercadonegro.pe/ ${var1} OR ${var1syn} after:2022`;
+    const qPR      = `site:peru-retail.com/ ${var1} OR ${var1syn} after:2022`;
+    const qME      = `site:mundoempresarial.pe/ ${var1} OR ${var1syn} after:2022`;
+    const qGest    = `site:gestion.pe/ ${var1} OR ${var1syn} after:2022`;
+    const qINEI    = `site:inei.gob.pe/ ${var1} OR ${var1syn}`;
+
+    setQ('q_ae2',    qAE2);    setA('link_ae2',    `https://www.google.com/search?q=${enc(qAE2)}`);
+    setQ('q_peruano',qPeruano);setA('link_peruano',`https://www.google.com/search?q=${enc(qPeruano)}`);
+    setQ('q_mn',     qMN);     setA('link_mn',     `https://www.google.com/search?q=${enc(qMN)}`);
+    setQ('q_pr',     qPR);     setA('link_pr',     `https://www.google.com/search?q=${enc(qPR)}`);
+    setQ('q_me',     qME);     setA('link_me',     `https://www.google.com/search?q=${enc(qME)}`);
+    setQ('q_gestion',qGest);   setA('link_gestion',`https://www.google.com/search?q=${enc(qGest)}`);
+    setQ('q_inei',   qINEI);   setA('link_inei',   `https://www.google.com/search?q=${enc(qINEI)}`);
+
+    // ——— 3b. Regional / Local ———
+    const qRep      = `site:larepublica.pe/ ${var1} OR ${var1syn} ${region} after:2022`;
+    const qComercio = `site:elcomercio.pe/ ${var1} OR ${var1syn} ${region} after:2022`;
+    const qRPP      = `site:rpp.pe/ ${var1} OR ${var1syn} ${region} after:2022`;
+    const qINEIreg  = `site:inei.gob.pe/ ${region} ${var1} OR ${var1syn}`;
+    const qLocal    = `${var1} OR ${var1syn} ${region} ${inst} after:2021`;
+
+    setQ('q_rep',      qRep);      setA('link_rep',      `https://www.google.com/search?q=${enc(qRep)}`);
+    setQ('q_comercio', qComercio); setA('link_comercio', `https://www.google.com/search?q=${enc(qComercio)}`);
+    setQ('q_rpp',      qRPP);      setA('link_rpp',      `https://www.google.com/search?q=${enc(qRPP)}`);
+    setQ('q_inei_reg', qINEIreg);  setA('link_inei_reg', `https://www.google.com/search?q=${enc(qINEIreg)}`);
+    setQ('q_local',    qLocal);    setA('link_local',    `https://www.google.com/search?q=${enc(qLocal)}`);
+
+    // ——— 4. Importancia — preguntas en español ———
+    const sectLabel = sector;
+    setQ('q_contrib', `¿Cuál es la contribución de ${var1} en ${sectLabel}? Dame un autor con referencia APA`);
+    setQ('q_import',  `¿Cuál es la importancia de ${var1} en ${sectLabel}? Dame un autor con referencia APA`);
+    setQ('q_origin',  `¿Cuál es el origen del concepto de ${var1} en ${sectLabel}? Dame un autor con referencia APA`);
+  }
+
+  function validar(){
+    const campos = ['var1','var1en','otrasVars','institucion'];
+    const bar = document.getElementById('validBar');
+    let vacios = 0;
+    campos.forEach(id => {
+      const el = document.getElementById(id);
+      const empty = el.value.trim() === '';
+      el.classList.toggle('invalid', empty);
+      if(empty) vacios++;
+    });
+    if(vacios > 0){
+      bar.style.display = 'block';
+      bar.className = '';
+      bar.textContent = `⚠ Faltan ${vacios} campo(s) obligatorio(s) (marcados en rojo). Las ecuaciones se generan con valores de ejemplo hasta que los completes.`;
+    } else {
+      bar.style.display = 'block';
+      bar.className = 'ok';
+      bar.textContent = '✓ Todos los campos obligatorios completados. Ecuaciones listas.';
+    }
+  }
+
+  function setH(id, html){ const el = document.getElementById(id); if(el) el.innerHTML = html; }
+  function setQ(id, txt){ const el = document.getElementById(id); if(el) el.textContent = txt; }
+  function setA(id, url){ const el = document.getElementById(id); if(el) el.href = url; }
+
+  function copyEl(id, btn){
+    const txt = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(txt).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ OK';
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1500);
+    });
+  }
+
+  // Inicializar al cargar
+  update();
+</script>
+</body>
+</html>

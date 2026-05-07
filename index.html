@@ -3,762 +3,649 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AntoMatic — Proyecto 1: Descripción del Problema</title>
+<title>AntoMatic — Ecuaciones para la Descripción del Problema</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #111;
+    --gray-dark: #444;
+    --gray-mid: #777;
+    --gray-light: #bbb;
+    --gray-pale: #e8e8e8;
+    --gray-bg: #f5f5f5;
+    --white: #fff;
+    --accent: #111;
+    --tag-theory: #e8f0fe;
+    --tag-global: #e6f4ea;
+    --tag-national: #fce8e6;
+    --tag-contribution: #fef7e0;
+    --tag-local: #f3e8fd;
+    --tag-theory-border: #c5d8fb;
+    --tag-global-border: #a8d5b5;
+    --tag-national-border: #f5b8b4;
+    --tag-contribution-border: #fce09a;
+    --tag-local-border: #d8b4fd;
+    --tag-theory-text: #1a56c4;
+    --tag-global-text: #1a7a3c;
+    --tag-national-text: #c0392b;
+    --tag-contribution-text: #9a6800;
+    --tag-local-text: #7e22ce;
+  }
 
   body {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
-    background: #fff;
-    color: #000;
-    padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: var(--black);
+    background: var(--white);
+    min-height: 100vh;
   }
 
-  /* ===== HEADER ===== */
+  /* ── HEADER ─────────────────────────────────────────── */
   header {
-    border: 2px solid #000;
-    padding: 12px 16px;
-    margin-bottom: 20px;
+    border-bottom: 2px solid var(--black);
+    padding: 1.25rem 2rem;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    align-items: baseline;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+  header p  { font-size: 12px; color: var(--gray-mid); }
+
+  /* ── PROGRESS STEPS ──────────────────────────────────── */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--gray-pale);
+    background: var(--gray-bg);
+  }
+  .step-item { display: flex; align-items: center; gap: 8px; }
+  .step-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid var(--gray-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--gray-light);
+    flex-shrink: 0;
+  }
+  .step-dot.active { border-color: var(--black); color: var(--black); background: var(--black); color: var(--white); }
+  .step-dot.done   { border-color: var(--gray-mid); color: var(--white); background: var(--gray-mid); }
+  .step-label { font-size: 12px; color: var(--gray-mid); }
+  .step-label.active { color: var(--black); font-weight: 700; }
+  .step-sep { width: 40px; height: 1px; background: var(--gray-light); margin: 0 6px; }
+
+  /* ── LAYOUT ─────────────────────────────────────────── */
+  main { max-width: 820px; margin: 0 auto; padding: 2rem; }
+
+  /* ── FORM ───────────────────────────────────────────── */
+  .form-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray-mid);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-pale);
+  }
+  .form-card {
+    border: 1px solid var(--gray-pale);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  .form-field { display: flex; flex-direction: column; gap: 4px; }
+  .form-field label { font-size: 12px; color: var(--gray-dark); font-weight: 700; }
+  .form-field .hint { font-size: 11px; color: var(--gray-mid); }
+  input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--gray-light);
+    padding: 7px 10px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: var(--black);
+    outline: none;
+    transition: border-color .15s;
+  }
+  input[type="text"]:focus { border-color: var(--black); }
+  input[type="text"]::placeholder { color: var(--gray-light); }
+  .required { color: #c0392b; margin-left: 2px; }
+
+  .btn-primary {
+    display: block; width: 100%;
+    background: var(--black); color: var(--white);
+    border: none; padding: 11px 20px;
+    font-family: Arial, sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.02em;
+    transition: opacity .15s;
+    margin-top: 1rem;
+  }
+  .btn-primary:hover { opacity: .85; }
+  .btn-primary:disabled { opacity: .35; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: none; color: var(--gray-dark);
+    border: 1px solid var(--gray-light); padding: 6px 14px;
+    font-family: Arial, sans-serif; font-size: 13px;
+    cursor: pointer; transition: border-color .15s;
+  }
+  .btn-secondary:hover { border-color: var(--black); color: var(--black); }
+
+  .hint-error {
+    font-size: 12px; color: #c0392b;
+    margin-top: 8px; display: none;
+  }
+
+  /* ── RESULTS ────────────────────────────────────────── */
+  .results-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 1.5rem;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .results-header h2 { font-size: 17px; font-weight: 700; }
+
+  /* ── PARAGRAPH CARDS ─────────────────────────────────── */
+  .par-card {
+    border: 1px solid var(--gray-pale);
+    margin-bottom: .75rem;
+    overflow: hidden;
+  }
+  .par-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; cursor: pointer;
+    background: var(--gray-bg);
+    border-bottom: 1px solid var(--gray-pale);
     gap: 12px;
   }
-
-  header .brand {
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: #555;
-  }
-
-  header h1 {
-    font-size: 14px;
-    font-weight: bold;
-    margin: 3px 0 2px;
-    font-family: Arial, sans-serif;
-  }
-
-  header p {
-    font-size: 11px;
-    color: #555;
-  }
-
-  .header-badge {
-    background: #000;
-    color: #fff;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 4px 10px;
-    letter-spacing: .08em;
-    white-space: nowrap;
-    align-self: center;
-  }
-
-  /* ===== INPUT SECTION ===== */
-  .input-section {
-    border: 1px solid #000;
-    padding: 14px 16px;
-    margin-bottom: 20px;
-  }
-
-  .input-section h2 {
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 6px;
-  }
-
-  .input-grid {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 7px 12px;
-    align-items: center;
-  }
-
-  .input-grid label {
-    font-size: 12px;
-    font-family: Arial, sans-serif;
-  }
-
-  .input-grid input,
-  .input-grid select {
-    background: #cfe2f3;
-    border: 1px solid #999;
-    padding: 5px 7px;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    width: 100%;
-    color: #000;
-    transition: background .15s, border-color .15s;
-  }
-
-  .input-grid input:focus,
-  .input-grid select:focus {
-    outline: 2px solid #3c78d8;
-    background: #daeeff;
-  }
-
-  .input-grid input.invalid {
-    background: #ffe0e0;
-    border-color: #c00;
-  }
-
-  .hint {
-    font-size: 10px;
-    color: #666;
-    grid-column: 2;
-    margin-top: -4px;
-    font-family: Arial, sans-serif;
-  }
-
-  .input-divider {
-    grid-column: 1 / -1;
-    border: none;
-    border-top: 1px dashed #bbb;
-    margin: 4px 0;
-  }
-
-  /* ===== VALIDATION BAR ===== */
-  #validBar {
-    display: none;
-    background: #fff3cd;
-    border: 1px solid #e6a817;
-    border-left: 4px solid #e6a817;
-    padding: 7px 12px;
-    font-size: 11px;
-    font-family: Arial, sans-serif;
-    margin-bottom: 16px;
-    color: #7a4f00;
-  }
-
-  #validBar.ok {
-    background: #eaffea;
-    border-color: #2a7a2a;
-    border-left-color: #2a7a2a;
-    color: #1a5c1a;
-  }
-
-  /* ===== OUTPUT SECTIONS ===== */
-  .output-section {
-    margin-bottom: 14px;
-    border: 1px solid #000;
-  }
-
-  .sec-header {
-    background: #000;
-    color: #fff;
-    font-weight: bold;
-    font-size: 12px;
-    font-family: Arial, sans-serif;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .sec-header .num {
-    font-size: 16px;
-    font-weight: bold;
-    min-width: 20px;
-  }
-
-  .sec-title-text { flex: 1; }
-
-  .sec-badge {
-    font-size: 9px;
-    font-weight: bold;
-    letter-spacing: .07em;
-    padding: 2px 6px;
-    border: 1px solid #fff;
-    white-space: nowrap;
-  }
-
-  .sec-badge.mundial  { border-color: #6af; color: #6af; }
-  .sec-badge.nacional { border-color: #afa; color: #afa; }
-  .sec-badge.regional { border-color: #fa6; color: #fa6; }
-  .sec-badge.teoria   { border-color: #e9e; color: #e9e; }
-  .sec-badge.redaccion{ border-color: #ff9; color: #ff9; }
-
-  .output-body { padding: 10px 12px; }
-
-  .section-instruction {
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    background: #f0f0f0;
-    border-left: 3px solid #000;
-    padding: 5px 8px;
-    margin-bottom: 10px;
-    line-height: 1.5;
-  }
-
-  .output-row {
-    display: grid;
-    grid-template-columns: 190px 1fr;
-    gap: 5px 10px;
-    margin-bottom: 6px;
-    align-items: center;
-  }
-
-  .output-label {
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    color: #444;
-    font-style: italic;
-    line-height: 1.3;
-  }
-
-  .output-value {
-    background: #f5f5f5;
-    border: 1px solid #ccc;
-    padding: 5px 7px;
-    font-size: 11.5px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    min-height: 28px;
-  }
-
-  .output-value span {
-    flex: 1;
-    word-break: break-all;
-    line-height: 1.4;
-  }
-
-  .copy-btn {
-    background: #000;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 10px;
-    padding: 3px 7px;
-    white-space: nowrap;
-    font-family: Arial, sans-serif;
-    flex-shrink: 0;
-    transition: background .1s;
-  }
-
-  .copy-btn:hover { background: #444; }
-  .copy-btn.done  { background: #2a7a2a; }
-
-  .open-btn {
-    background: #fff;
-    color: #000;
-    border: 1px solid #999;
-    cursor: pointer;
-    font-size: 10px;
-    padding: 3px 7px;
-    white-space: nowrap;
-    font-family: Arial, sans-serif;
-    flex-shrink: 0;
-    text-decoration: none;
-    display: inline-block;
-    transition: background .1s;
-  }
-
-  .open-btn:hover { background: #e8e8e8; }
-
-  hr.inner {
-    border: none;
-    border-top: 1px solid #ddd;
-    margin: 8px 0;
-  }
-
-  .note {
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    color: #666;
-    margin: 2px 0 4px;
-    line-height: 1.4;
-  }
-
-  /* NYT paywall note — más visible */
-  .paywall-note {
-    font-family: Arial, sans-serif;
-    font-size: 10.5px;
-    color: #7a4f00;
-    background: #fff8e1;
-    border: 1px solid #e6a817;
-    border-left: 3px solid #e6a817;
-    padding: 4px 8px;
-    margin: -2px 0 6px 0;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .paywall-note::before {
-    content: "⚠";
-    font-size: 12px;
+  .par-header:hover { background: var(--gray-pale); }
+  .par-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex: 1; }
+  .par-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 2px 8px;
     flex-shrink: 0;
   }
+  .par-title { font-size: 13px; font-weight: 700; }
+  .chevron { font-size: 16px; color: var(--gray-mid); flex-shrink: 0; transition: transform .2s; }
+  .chevron.closed { transform: rotate(-90deg); }
 
-  /* Tarea 5 — redacción propia */
-  .manual-box {
-    background: #fffde7;
-    border: 1px dashed #bbb;
+  .par-body { padding: 14px 16px; }
+  .par-desc {
+    font-size: 13px; color: var(--gray-dark); margin-bottom: 14px;
+    line-height: 1.6; padding-bottom: 12px; border-bottom: 1px solid var(--gray-pale);
+  }
+
+  /* ── SOURCE ROWS ─────────────────────────────────────── */
+  .src-list { display: flex; flex-direction: column; gap: 8px; }
+  .src-row {
+    border: 1px solid var(--gray-pale);
     padding: 10px 12px;
-    font-family: Arial, sans-serif;
-    font-size: 11.5px;
-    line-height: 1.6;
-    color: #333;
+  }
+  .src-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .src-info { flex: 1; min-width: 0; }
+  .src-name {
+    font-size: 12px; font-weight: 700; color: var(--black);
+    margin-bottom: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .ai-badge {
+    font-size: 10px; background: #fef7e0; color: var(--tag-contribution-text);
+    border: 1px solid var(--tag-contribution-border);
+    padding: 1px 6px; font-weight: 700; letter-spacing: 0.05em;
+  }
+  .src-note { font-size: 11px; color: var(--gray-mid); font-style: italic; margin-bottom: 5px; }
+  .src-eq {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px; color: var(--black);
+    background: var(--gray-bg); border: 1px solid var(--gray-pale);
+    padding: 7px 10px; display: block;
+    word-break: break-all; line-height: 1.5;
+  }
+  .src-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+  .btn-copy, .btn-search {
+    font-family: Arial, sans-serif; font-size: 11px; font-weight: 700;
+    cursor: pointer; padding: 5px 10px; width: 78px;
+    text-align: center; white-space: nowrap; text-decoration: none;
+    display: block; letter-spacing: 0.02em;
+  }
+  .btn-copy {
+    background: var(--white); color: var(--black);
+    border: 1px solid var(--gray-light);
+  }
+  .btn-copy:hover { border-color: var(--black); }
+  .btn-copy.done { background: var(--black); color: var(--white); border-color: var(--black); }
+  .btn-search {
+    background: var(--black); color: var(--white);
+    border: 1px solid var(--black);
+  }
+  .btn-search:hover { opacity: .8; }
+  .btn-search-alt {
+    font-family: Arial, sans-serif; font-size: 11px; font-weight: 700;
+    cursor: pointer; padding: 5px 10px; width: 78px;
+    text-align: center; white-space: nowrap; text-decoration: none;
+    display: block; letter-spacing: 0.02em;
+    background: var(--white); color: var(--black);
+    border: 1px solid var(--gray-light);
+  }
+  .btn-search-alt:hover { border-color: var(--black); }
+  .dual-search { display: flex; flex-direction: column; gap: 4px; }
+  .dual-label { font-size: 10px; color: var(--gray-mid); text-align: center; }
+
+  /* ── MANUAL PARAGRAPH ───────────────────────────────── */
+  .manual-box {
+    background: var(--gray-bg); border-left: 3px solid var(--black);
+    padding: 12px 16px; font-size: 13px; color: var(--gray-dark);
+    line-height: 1.7;
+  }
+  .manual-box strong { color: var(--black); }
+
+  /* ── TIPS BOX ───────────────────────────────────────── */
+  .tips-box {
+    border: 1px solid var(--gray-pale); background: var(--gray-bg);
+    padding: 1rem 1.25rem; margin-top: 1.25rem;
+    font-size: 12px; color: var(--gray-dark); line-height: 1.8;
+  }
+  .tips-box strong { color: var(--black); }
+
+  /* ── FOOTER ──────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--gray-pale);
+    padding: 1rem 2rem; text-align: center;
+    font-size: 11px; color: var(--gray-light);
+    margin-top: 3rem;
   }
 
-  .manual-box strong { color: #000; }
-
-  /* ===== FOOTER ===== */
-  footer {
-    border-top: 1px solid #ddd;
-    margin-top: 24px;
-    padding-top: 10px;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    color: #aaa;
-    text-align: center;
+  /* ── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 560px) {
+    main { padding: 1.25rem; }
+    .form-grid { grid-template-columns: 1fr; }
+    header { padding: 1rem 1.25rem; }
+    .steps { padding: .75rem 1.25rem; }
+    .step-sep { width: 20px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
 <header>
-  <div>
-    <div class="brand">AntoMatic Tools · UNASAM</div>
-    <h1>Proyecto 1 — Descripción del Problema</h1>
-    <p>Introducción · Antecedentes de la problemática · Marco conceptual</p>
-  </div>
-  <div class="header-badge">v2.0</div>
+  <h1>AntoMatic</h1>
+  <p>Generador de ecuaciones de búsqueda · Capítulo: Descripción del Problema</p>
 </header>
 
-<!-- ===== VALIDATION BAR ===== -->
-<div id="validBar">Completa los campos obligatorios marcados en rojo para activar todas las ecuaciones.</div>
-
-<!-- ===== INPUTS ===== -->
-<div class="input-section">
-  <h2>Datos de entrada — campos celestes</h2>
-  <div class="input-grid">
-
-    <label><b>Variable principal</b> (si es &gt;1 palabra, usa "…"):</label>
-    <input type="text" id="var1" placeholder='"desempeño laboral"' oninput="update()">
-    <span></span><span class="hint">Ejemplo: <i>"desempeño laboral"</i> &nbsp;|&nbsp; En español</span>
-
-    <label>Sinónimo en español:</label>
-    <input type="text" id="var1syn" placeholder='"rendimiento laboral"' oninput="update()">
-    <span></span><span class="hint">Ejemplo: <i>"rendimiento laboral"</i></span>
-
-    <hr class="input-divider"><hr class="input-divider">
-
-    <label>Variable principal <b>en inglés</b>:</label>
-    <input type="text" id="var1en" placeholder='"work performance"' oninput="update()">
-    <span></span><span class="hint">Ejemplo: <i>"work performance"</i></span>
-
-    <label>Sinónimo en inglés:</label>
-    <input type="text" id="var1enSyn" placeholder='"job performance"' oninput="update()">
-    <span></span><span class="hint">Ejemplo: <i>"job performance"</i></span>
-
-    <hr class="input-divider"><hr class="input-divider">
-
-    <label>Otras variables (separadas por coma):</label>
-    <input type="text" id="otrasVars" placeholder='variable2, variable3, variable4' oninput="update()">
-    <span></span><span class="hint">En español, separadas por coma</span>
-
-    <label>Otras variables <b>en inglés</b>:</label>
-    <input type="text" id="otrasVarsEn" placeholder='variable2En, variable3En' oninput="update()">
-    <span></span><span class="hint">En inglés, separadas por coma</span>
-
-    <hr class="input-divider"><hr class="input-divider">
-
-    <label>Sector / tipo de organización:</label>
-    <select id="sector" onchange="update()">
-      <option value="la empresa">la empresa</option>
-      <option value="gestión pública">gestión pública</option>
-      <option value="las municipalidades">las municipalidades</option>
-      <option value="la universidad">la universidad</option>
-      <option value="los negocios">los negocios</option>
-      <option value="comercio electrónico">comercio electrónico</option>
-      <option value="salud">salud</option>
-      <option value="educación superior">educación superior</option>
-      <option value="el sector financiero">el sector financiero</option>
-      <option value="retail">retail</option>
-      <option value="turismo">turismo</option>
-    </select>
-
-    <label>Sector <b>en inglés</b>:</label>
-    <select id="sectorEn" onchange="update()">
-      <option value="organizations">organizations</option>
-      <option value="companies">companies</option>
-      <option value="public management">public management</option>
-      <option value="universities">universities</option>
-      <option value="e-commerce">e-commerce</option>
-      <option value="healthcare organizations">healthcare organizations</option>
-      <option value="higher education">higher education</option>
-      <option value="financial organizations">financial organizations</option>
-      <option value="retail companies">retail companies</option>
-      <option value="tourism organizations">tourism organizations</option>
-    </select>
-
-    <hr class="input-divider"><hr class="input-divider">
-
-    <label>Nombre de la institución:</label>
-    <input type="text" id="institucion" placeholder='Municipalidad Provincial de Huaraz' oninput="update()">
-
-    <label>Región / Departamento:</label>
-    <input type="text" id="region" placeholder='Áncash' oninput="update()">
-    <span></span><span class="hint">Usado en búsquedas de nivel regional</span>
-
-    <label>DOI del modelo de investigación <span style="font-weight:normal">(opcional)</span>:</label>
-    <input type="text" id="doi" placeholder='https://doi.org/10.1016/...' oninput="update()">
-
+<div class="steps">
+  <div class="step-item">
+    <div class="step-dot active" id="dot1">1</div>
+    <span class="step-label active" id="lbl1">Datos del proyecto</span>
+  </div>
+  <div class="step-sep"></div>
+  <div class="step-item">
+    <div class="step-dot" id="dot2">2</div>
+    <span class="step-label" id="lbl2">Ecuaciones de búsqueda</span>
   </div>
 </div>
 
-<!-- ===== OUTPUT 1: DEFINICIÓN TEÓRICA ===== -->
-<div class="output-section">
-  <div class="sec-header">
-    <span class="num">1</span>
-    <span class="sec-title-text" id="tarea1">Definición teórica de la variable principal</span>
-    <span class="sec-badge teoria">Teoría</span>
-  </div>
-  <div class="output-body">
-    <p class="section-instruction">Busca la definición en las fuentes académicas. Al finalizar el párrafo pega el link de la fuente como referencia.</p>
-    <div class="output-row">
-      <span class="output-label">Google Scholar</span>
-      <div class="output-value"><span id="q_scholar"></span><button class="copy-btn" onclick="copyEl('q_scholar',this)">Copiar</button><a class="open-btn" id="link_scholar" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">ScienceDirect</span>
-      <div class="output-value"><span id="q_science"></span><button class="copy-btn" onclick="copyEl('q_science',this)">Copiar</button><a class="open-btn" id="link_science" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Scopus</span>
-      <div class="output-value"><span id="q_scopus"></span><button class="copy-btn" onclick="copyEl('q_scopus',this)">Copiar</button><a class="open-btn" id="link_scopus" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">MS Copilot</span>
-      <div class="output-value"><span id="q_copilot"></span><button class="copy-btn" onclick="copyEl('q_copilot',this)">Copiar</button><a class="open-btn" href="https://copilot.microsoft.com" target="_blank">Abrir</a></div>
-    </div>
-  </div>
-</div>
+<main>
 
-<!-- ===== OUTPUT 2: NIVEL MUNDIAL ===== -->
-<div class="output-section">
-  <div class="sec-header">
-    <span class="num">2</span>
-    <span class="sec-title-text" id="tarea2">Situación a nivel mundial</span>
-    <span class="sec-badge mundial">Mundial</span>
-  </div>
-  <div class="output-body">
-    <p class="section-instruction">Usa 2 o 3 fuentes. Copia la ecuación, busca en Chrome y pega el link al final del párrafo redactado.</p>
-    <div class="output-row">
-      <span class="output-label">América Economía</span>
-      <div class="output-value"><span id="q_ae"></span><button class="copy-btn" onclick="copyEl('q_ae',this)">Copiar</button><a class="open-btn" id="link_ae" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">The New York Times</span>
-      <div class="output-value"><span id="q_nyt"></span><button class="copy-btn" onclick="copyEl('q_nyt',this)">Copiar</button><a class="open-btn" id="link_nyt" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="paywall-note">Puede eludir el paywall del NYT presionando <b>ESC</b> o la <b>"X"</b> del navegador antes de que la página cargue completamente.</div>
-    <div class="output-row">
-      <span class="output-label">BBC Mundo</span>
-      <div class="output-value"><span id="q_bbc"></span><button class="copy-btn" onclick="copyEl('q_bbc',this)">Copiar</button><a class="open-btn" id="link_bbc" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">GALLUP <span style="font-size:10px">(RRHH)</span></span>
-      <div class="output-value"><span id="q_gallup"></span><button class="copy-btn" onclick="copyEl('q_gallup',this)">Copiar</button><a class="open-btn" id="link_gallup" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Deutsche Welle</span>
-      <div class="output-value"><span id="q_dw"></span><button class="copy-btn" onclick="copyEl('q_dw',this)">Copiar</button><a class="open-btn" id="link_dw" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <hr class="inner">
-    <div class="output-row">
-      <span class="output-label">OMS <span style="font-size:10px">(Salud / Psicología Org.)</span></span>
-      <div class="output-value"><span id="q_oms"></span><button class="copy-btn" onclick="copyEl('q_oms',this)">Copiar</button><a class="open-btn" id="link_oms" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">OIT — inglés <span style="font-size:10px">(RRHH / Org.)</span></span>
-      <div class="output-value"><span id="q_ilo_en"></span><button class="copy-btn" onclick="copyEl('q_ilo_en',this)">Copiar</button><a class="open-btn" id="link_ilo_en" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">OIT — español <span style="font-size:10px">(RRHH / Org.)</span></span>
-      <div class="output-value"><span id="q_ilo_es"></span><button class="copy-btn" onclick="copyEl('q_ilo_es',this)">Copiar</button><a class="open-btn" id="link_ilo_es" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">ECOMMERCE NEWS <span style="font-size:10px">(E-commerce / Marketing)</span></span>
-      <div class="output-value"><span id="q_ecnews"></span><button class="copy-btn" onclick="copyEl('q_ecnews',this)">Copiar</button><a class="open-btn" id="link_ecnews" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Statista <span style="font-size:10px">(Datos / Marketing)</span></span>
-      <div class="output-value"><span id="q_statista"></span><button class="copy-btn" onclick="copyEl('q_statista',this)">Copiar</button><a class="open-btn" id="link_statista" href="#" target="_blank">Abrir</a></div>
-    </div>
-  </div>
-</div>
+  <!-- ═══════════════════════ PASO 1 ═══════════════════════ -->
+  <div id="step1">
 
-<!-- ===== OUTPUT 3: NIVEL NACIONAL ===== -->
-<div class="output-section">
-  <div class="sec-header">
-    <span class="num">3</span>
-    <span class="sec-title-text" id="tarea3">Situación a nivel nacional (Perú)</span>
-    <span class="sec-badge nacional">Nacional</span>
-  </div>
-  <div class="output-body">
-    <p class="section-instruction">Busca en Chrome. Cita la fuente al final del párrafo redactado.</p>
-    <div class="output-row">
-      <span class="output-label">Actualidad Empresarial</span>
-      <div class="output-value"><span id="q_ae2"></span><button class="copy-btn" onclick="copyEl('q_ae2',this)">Copiar</button><a class="open-btn" id="link_ae2" href="#" target="_blank">Abrir</a></div>
+    <!-- Variable principal -->
+    <div class="form-card">
+      <div class="form-section-title">Variable principal de estudio</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="v1">En español<span class="required">*</span></label>
+          <input type="text" id="v1" placeholder="ej: rendimiento laboral" oninput="clearHint()">
+        </div>
+        <div class="form-field">
+          <label for="s1">Sinónimo en español</label>
+          <input type="text" id="s1" placeholder="ej: rendimiento de trabajo">
+        </div>
+        <div class="form-field">
+          <label for="v1en">En inglés<span class="required">*</span></label>
+          <input type="text" id="v1en" placeholder="ej: job performance" oninput="clearHint()">
+        </div>
+        <div class="form-field">
+          <label for="s1en">Sinónimo en inglés</label>
+          <input type="text" id="s1en" placeholder="ej: work performance">
+        </div>
+      </div>
     </div>
-    <div class="output-row">
-      <span class="output-label">El Peruano</span>
-      <div class="output-value"><span id="q_peruano"></span><button class="copy-btn" onclick="copyEl('q_peruano',this)">Copiar</button><a class="open-btn" id="link_peruano" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Mercado Negro <span style="font-size:10px">(Marketing)</span></span>
-      <div class="output-value"><span id="q_mn"></span><button class="copy-btn" onclick="copyEl('q_mn',this)">Copiar</button><a class="open-btn" id="link_mn" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Peru Retail <span style="font-size:10px">(Marketing / E-com.)</span></span>
-      <div class="output-value"><span id="q_pr"></span><button class="copy-btn" onclick="copyEl('q_pr',this)">Copiar</button><a class="open-btn" id="link_pr" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Mundo Empresarial</span>
-      <div class="output-value"><span id="q_me"></span><button class="copy-btn" onclick="copyEl('q_me',this)">Copiar</button><a class="open-btn" id="link_me" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Gestión</span>
-      <div class="output-value"><span id="q_gestion"></span><button class="copy-btn" onclick="copyEl('q_gestion',this)">Copiar</button><a class="open-btn" id="link_gestion" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">INEI <span style="font-size:10px">(datos estadísticos)</span></span>
-      <div class="output-value"><span id="q_inei"></span><button class="copy-btn" onclick="copyEl('q_inei',this)">Copiar</button><a class="open-btn" id="link_inei" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Peru Quiosco <span style="font-size:10px">(suscripción)</span></span>
-      <div class="output-value" style="font-style:italic;color:#555;font-family:Arial,sans-serif;font-size:11px">Servicio de suscripción — solicitarlo a Antonio Lirio.</div>
-    </div>
-  </div>
-</div>
 
-<!-- ===== OUTPUT 3b: NIVEL REGIONAL/LOCAL ===== -->
-<div class="output-section">
-  <div class="sec-header">
-    <span class="num">3b</span>
-    <span class="sec-title-text" id="tarea3b">Situación a nivel regional / local</span>
-    <span class="sec-badge regional">Regional</span>
-  </div>
-  <div class="output-body">
-    <p class="section-instruction">Nivel regional y local. Complementa con datos del INEI por región, noticias locales o informes de la propia institución.</p>
-    <div class="output-row">
-      <span class="output-label">Diario La República <span style="font-size:10px">(Áncash / región)</span></span>
-      <div class="output-value"><span id="q_rep"></span><button class="copy-btn" onclick="copyEl('q_rep',this)">Copiar</button><a class="open-btn" id="link_rep" href="#" target="_blank">Abrir</a></div>
+    <!-- Otras variables -->
+    <div class="form-card">
+      <div class="form-section-title">Otras variables (independientes / factores)</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="otras_es">En español</label>
+          <input type="text" id="otras_es" placeholder='ej: liderazgo, "cultura organizacional"'>
+        </div>
+        <div class="form-field">
+          <label for="otras_en">En inglés</label>
+          <input type="text" id="otras_en" placeholder='ej: leadership, "organizational culture"'>
+        </div>
+      </div>
     </div>
-    <div class="output-row">
-      <span class="output-label">Diario El Comercio <span style="font-size:10px">(región)</span></span>
-      <div class="output-value"><span id="q_comercio"></span><button class="copy-btn" onclick="copyEl('q_comercio',this)">Copiar</button><a class="open-btn" id="link_comercio" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">RPP Noticias <span style="font-size:10px">(regional)</span></span>
-      <div class="output-value"><span id="q_rpp"></span><button class="copy-btn" onclick="copyEl('q_rpp',this)">Copiar</button><a class="open-btn" id="link_rpp" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">INEI — datos regionales</span>
-      <div class="output-value"><span id="q_inei_reg"></span><button class="copy-btn" onclick="copyEl('q_inei_reg',this)">Copiar</button><a class="open-btn" id="link_inei_reg" href="#" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Google — búsqueda local</span>
-      <div class="output-value"><span id="q_local"></span><button class="copy-btn" onclick="copyEl('q_local',this)">Copiar</button><a class="open-btn" id="link_local" href="#" target="_blank">Abrir</a></div>
-    </div>
-  </div>
-</div>
 
-<!-- ===== OUTPUT 4: IMPORTANCIA / ORIGEN ===== -->
-<div class="output-section">
-  <div class="sec-header">
-    <span class="num">4</span>
-    <span class="sec-title-text" id="tarea4">Importancia, contribución u origen de la variable principal en las organizaciones</span>
-    <span class="sec-badge teoria">Teoría</span>
-  </div>
-  <div class="output-body">
-    <p class="section-instruction">Elige <b>solo una</b> de las tres alternativas. Copia la pregunta, pégala en ChatGPT y cita al final del párrafo.</p>
-    <div class="output-row">
-      <span class="output-label">Contribución (ChatGPT)</span>
-      <div class="output-value"><span id="q_contrib"></span><button class="copy-btn" onclick="copyEl('q_contrib',this)">Copiar</button><a class="open-btn" href="https://chat.openai.com" target="_blank">Abrir</a></div>
+    <!-- Organización y contexto -->
+    <div class="form-card">
+      <div class="form-section-title">Organización y contexto de la investigación</div>
+      <div class="form-field" style="margin-bottom:12px;">
+        <label for="org">Nombre de la organización / empresa</label>
+        <input type="text" id="org" placeholder="ej: Municipalidad Provincial de Huaraz">
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="ctx_es" id="lbl_ctx_es">Área de contribución</label>
+          <span class="hint">Selecciona o escribe el contexto en el que incide tu variable</span>
+          <input type="text" id="ctx_es" placeholder="Selecciona o escribe..." list="list_ctx_es" autocomplete="off">
+          <datalist id="list_ctx_es">
+            <option value="la empresa privada">
+            <option value="la gestión pública">
+            <option value="las municipalidades">
+            <option value="la universidad">
+            <option value="los negocios">
+            <option value="las ONG">
+            <option value="las asociaciones">
+            <option value="los establecimientos de salud">
+            <option value="los colegios profesionales">
+          </datalist>
+        </div>
+        <div class="form-field">
+          <label for="ctx_en" id="lbl_ctx_en">Área de contribución</label>
+          <span class="hint">Select or type the English version</span>
+          <input type="text" id="ctx_en" placeholder="Select or type..." list="list_ctx_en" autocomplete="off">
+          <datalist id="list_ctx_en">
+            <option value="the private companies">
+            <option value="the public management">
+            <option value="the municipalities">
+            <option value="the universities">
+            <option value="businesses">
+            <option value="NGOs">
+            <option value="health establishments">
+            <option value="social organizations">
+          </datalist>
+        </div>
+      </div>
     </div>
-    <div class="output-row">
-      <span class="output-label">Importancia (ChatGPT)</span>
-      <div class="output-value"><span id="q_import"></span><button class="copy-btn" onclick="copyEl('q_import',this)">Copiar</button><a class="open-btn" href="https://chat.openai.com" target="_blank">Abrir</a></div>
-    </div>
-    <div class="output-row">
-      <span class="output-label">Origen (ChatGPT)</span>
-      <div class="output-value"><span id="q_origin"></span><button class="copy-btn" onclick="copyEl('q_origin',this)">Copiar</button><a class="open-btn" href="https://chat.openai.com" target="_blank">Abrir</a></div>
-    </div>
-  </div>
-</div>
 
-<!-- ===== OUTPUT 5: SÍNTOMAS ===== -->
-<div class="output-section">
-  <div class="sec-header">
-    <span class="num">5</span>
-    <span class="sec-title-text" id="tarea5_head">Síntomas del problema</span>
-    <span class="sec-badge redaccion">Redacción propia</span>
-  </div>
-  <div class="output-body">
-    <div class="manual-box" id="tarea5_inst">
-      Describe cómo <strong>[otras variables]</strong> están incidiendo en <strong>[variable principal]</strong> en <strong>[institución]</strong>.<br><br>
-      Escríbelo con carácter <b>no concluyente</b> (esbozo de la situación, no diagnóstico definitivo). Puede tener connotación negativa o positiva.<br><br>
-      <span style="font-size:11px;color:#666">✏️ Este párrafo lo redactas tú personalmente en MS Word o Google Docs.</span>
-    </div>
-  </div>
-</div>
+    <p class="hint-error" id="formHint">
+      ⚠ Completa al menos la variable principal en español e inglés para continuar.
+    </p>
 
-<footer>AntoMatic Tools v2.0 · UNASAM EPG &amp; E.P. Administración · Tomar con precaución</footer>
+    <button class="btn-primary" onclick="generate()">
+      Generar ecuaciones de búsqueda →
+    </button>
+
+  </div><!-- /step1 -->
+
+
+  <!-- ═══════════════════════ PASO 2 ═══════════════════════ -->
+  <div id="step2" style="display:none;">
+
+    <div class="results-header">
+      <h2 id="resTitle"></h2>
+      <button class="btn-secondary" onclick="goBack()">← Editar datos</button>
+    </div>
+
+    <div id="parContainer"></div>
+
+    <div class="tips-box">
+      <strong>Cómo usar las ecuaciones:</strong>
+      usa <strong>Copiar</strong> para pegar en cualquier buscador, o <strong>Buscar</strong> para abrir directamente.
+      América Economía tiene dos botones: búsqueda directa en su sitio y búsqueda vía Google.
+      Las fuentes marcadas con <strong>IA</strong> se pegan en ChatGPT, Perplexity o Gemini.
+      Guarda el enlace de cada fuente que uses — lo necesitarás para las referencias APA.
+    </div>
+
+  </div><!-- /step2 -->
+
+</main>
+
+<footer>
+  AntoMatic — Herramientas para asesorados · UNASAM EPG · Dr. Antonio Lirio
+</footer>
 
 <script>
-  function v(id){ return document.getElementById(id).value.trim(); }
-  function enc(s){ return encodeURIComponent(s); }
+/* ══════════════════ URLS BASE ══════════════════ */
+const SC  = "https://scholar.google.com/scholar?q=";
+const GG  = "https://www.google.com/search?q=";
+const SD  = "https://www.sciencedirect.com/search?qs=";
+const SDT = "https://www.sciencedirect.com/topics?searchPhrase="; // Topics
+const AE  = "https://www.americaeconomia.com/busqueda?q=";        // búsqueda directa
 
-  function update(){
-    const var1    = v('var1')    || '"variable1"';
-    const var1syn = v('var1syn') || '"sinónimo1"';
-    const var1en  = v('var1en')  || '"variable1en"';
-    const var1enS = v('var1enSyn') || '"synonym1en"';
-    const otras   = v('otrasVars')   || 'variable2, variable3';
-    const otrasEn = v('otrasVarsEn') || 'variable2En, variable3En';
-    const sector  = v('sector')  || 'la empresa';
-    const sectEn  = v('sectorEn') || 'organizations';
-    const inst    = v('institucion') || 'la institución';
-    const region  = v('region')  || 'Áncash';
+/* ══════════════════ HELPERS ══════════════════ */
+const Q   = t => '"' + t + '"';
+const enc = encodeURIComponent;
+const $   = id => document.getElementById(id);
+const gv  = id => $(id).value.trim();
 
-    // Validación visual
-    validar();
+function clearHint() { $('formHint').style.display = 'none'; }
 
-    // ——— Headers ———
-    setH('tarea1', `Definición teórica de <i>${var1}</i>`);
-    setH('tarea2', `Situación a nivel mundial respecto a ${var1} — conectar con: <i>${otras}</i>`);
-    setH('tarea3', `Situación a nivel nacional (Perú) respecto a ${var1}`);
-    setH('tarea3b', `Situación a nivel regional / local respecto a ${var1} — ${region}`);
-    setH('tarea4', `Importancia, contribución u origen de <i>${var1}</i> en ${sector}`);
-    setH('tarea5_head', `Síntomas del problema en ${inst}`);
-    setH('tarea5_inst',
-      `Describe cómo <strong>${otras}</strong> están incidiendo en <strong>${var1}</strong> en <strong>${inst}</strong>.<br><br>
-       Escríbelo con carácter <b>no concluyente</b> (esbozo de la situación, no diagnóstico definitivo). Puede tener connotación negativa o positiva.<br><br>
-       <span style="font-size:11px;color:#666">✏️ Este párrafo lo redactas tú personalmente en MS Word o Google Docs.</span>`
-    );
+/* ══════════════════ GENERATE ══════════════════ */
+function generate() {
+  const v1    = gv('v1');
+  const v1en  = gv('v1en');
+  if (!v1 || !v1en) { $('formHint').style.display = 'block'; return; }
 
-    // ——— 1. Definición teórica ———
-    const qSch  = `(define OR concept OR definition) AND (${var1} OR ${var1syn}) OR (${var1en} OR ${var1enS})`;
-    const qSci  = `define ${var1en} OR ${var1enS}`;
-    const qScop = `TITLE-ABS-KEY ( ${var1en} OR ${var1enS} ) AND ( definition OR concept OR theory )`;
-    const qCop  = `Define "${var1en}" with citation and academic reference in APA format`;
+  const s1    = gv('s1')     || v1;
+  const s1en  = gv('s1en')   || v1en;
+  const otras = gv('otras_es') || 'variables independientes';
+  const ctxEs = gv('ctx_es')   || 'el contexto organizacional';
+  const ctxEn = gv('ctx_en')   || 'the organizational context';
+  const org   = gv('org')      || 'la organización';
 
-    setQ('q_scholar', qSch);   setA('link_scholar', `https://scholar.google.com/scholar?q=${enc(qSch)}`);
-    setQ('q_science', qSci);   setA('link_science', `https://www.sciencedirect.com/search?qs=${enc(qSci)}`);
-    setQ('q_scopus',  qScop);  setA('link_scopus',  `https://www.scopus.com/search/form.uri#basic`);
-    setQ('q_copilot', qCop);
-
-    // ——— 2. Mundial ———
-    const qAE      = `site:americaeconomia.com/ ${var1} OR ${var1syn} after:2022`;
-    const qNYT     = `site:nytimes.com/ ${var1en} OR ${var1enS} after:2022`;
-    const qBBC     = `site:bbc.com/mundo/ ${var1} OR ${var1syn} after:2022`;
-    const qGallup  = `site:gallup.com/workplace/ ${var1en} OR ${var1enS} after:2022`;
-    const qDW      = `site:dw.com/ ${var1} OR ${var1syn} after:2022`;
-    const qOMS     = `site:who.int/es/ ${var1} OR ${var1syn}`;
-    const qILOen   = `site:ilo.org/ ${var1en} OR ${var1enS} after:2022`;
-    const qILOes   = `site:ilo.org/ ${var1} OR ${var1syn} after:2022`;
-    const qECnews  = `site:ecommercenews.pe/ ${var1} OR ${var1syn} after:2022`;
-    const qStatist = `${var1en} statistics ${new Date().getFullYear()} site:statista.com`;
-
-    setQ('q_ae',      qAE);      setA('link_ae',      `https://www.google.com/search?q=${enc(qAE)}`);
-    setQ('q_nyt',     qNYT);     setA('link_nyt',     `https://www.google.com/search?q=${enc(qNYT)}`);
-    setQ('q_bbc',     qBBC);     setA('link_bbc',     `https://www.google.com/search?q=${enc(qBBC)}`);
-    setQ('q_gallup',  qGallup);  setA('link_gallup',  `https://www.google.com/search?q=${enc(qGallup)}`);
-    setQ('q_dw',      qDW);      setA('link_dw',      `https://www.google.com/search?q=${enc(qDW)}`);
-    setQ('q_oms',     qOMS);     setA('link_oms',     `https://www.google.com/search?q=${enc(qOMS)}`);
-    setQ('q_ilo_en',  qILOen);   setA('link_ilo_en',  `https://www.google.com/search?q=${enc(qILOen)}`);
-    setQ('q_ilo_es',  qILOes);   setA('link_ilo_es',  `https://www.google.com/search?q=${enc(qILOes)}`);
-    setQ('q_ecnews',  qECnews);  setA('link_ecnews',  `https://www.google.com/search?q=${enc(qECnews)}`);
-    setQ('q_statista',qStatist); setA('link_statista',`https://www.google.com/search?q=${enc(qStatist)}`);
-
-    // ——— 3. Nacional ———
-    const qAE2     = `site:actualidadempresarial.pe/ ${var1} OR ${var1syn}`;
-    const qPeruano = `site:elperuano.pe/ ${var1} OR ${var1syn} after:2022`;
-    const qMN      = `site:mercadonegro.pe/ ${var1} OR ${var1syn} after:2022`;
-    const qPR      = `site:peru-retail.com/ ${var1} OR ${var1syn} after:2022`;
-    const qME      = `site:mundoempresarial.pe/ ${var1} OR ${var1syn} after:2022`;
-    const qGest    = `site:gestion.pe/ ${var1} OR ${var1syn} after:2022`;
-    const qINEI    = `site:inei.gob.pe/ ${var1} OR ${var1syn}`;
-
-    setQ('q_ae2',    qAE2);    setA('link_ae2',    `https://www.google.com/search?q=${enc(qAE2)}`);
-    setQ('q_peruano',qPeruano);setA('link_peruano',`https://www.google.com/search?q=${enc(qPeruano)}`);
-    setQ('q_mn',     qMN);     setA('link_mn',     `https://www.google.com/search?q=${enc(qMN)}`);
-    setQ('q_pr',     qPR);     setA('link_pr',     `https://www.google.com/search?q=${enc(qPR)}`);
-    setQ('q_me',     qME);     setA('link_me',     `https://www.google.com/search?q=${enc(qME)}`);
-    setQ('q_gestion',qGest);   setA('link_gestion',`https://www.google.com/search?q=${enc(qGest)}`);
-    setQ('q_inei',   qINEI);   setA('link_inei',   `https://www.google.com/search?q=${enc(qINEI)}`);
-
-    // ——— 3b. Regional / Local ———
-    const qRep      = `site:larepublica.pe/ ${var1} OR ${var1syn} ${region} after:2022`;
-    const qComercio = `site:elcomercio.pe/ ${var1} OR ${var1syn} ${region} after:2022`;
-    const qRPP      = `site:rpp.pe/ ${var1} OR ${var1syn} ${region} after:2022`;
-    const qINEIreg  = `site:inei.gob.pe/ ${region} ${var1} OR ${var1syn}`;
-    const qLocal    = `${var1} OR ${var1syn} ${region} ${inst} after:2021`;
-
-    setQ('q_rep',      qRep);      setA('link_rep',      `https://www.google.com/search?q=${enc(qRep)}`);
-    setQ('q_comercio', qComercio); setA('link_comercio', `https://www.google.com/search?q=${enc(qComercio)}`);
-    setQ('q_rpp',      qRPP);      setA('link_rpp',      `https://www.google.com/search?q=${enc(qRPP)}`);
-    setQ('q_inei_reg', qINEIreg);  setA('link_inei_reg', `https://www.google.com/search?q=${enc(qINEIreg)}`);
-    setQ('q_local',    qLocal);    setA('link_local',    `https://www.google.com/search?q=${enc(qLocal)}`);
-
-    // ——— 4. Importancia — preguntas en español ———
-    const sectLabel = sector;
-    setQ('q_contrib', `¿Cuál es la contribución de ${var1} en ${sectLabel}? Dame un autor con referencia APA`);
-    setQ('q_import',  `¿Cuál es la importancia de ${var1} en ${sectLabel}? Dame un autor con referencia APA`);
-    setQ('q_origin',  `¿Cuál es el origen del concepto de ${var1} en ${sectLabel}? Dame un autor con referencia APA`);
-  }
-
-  function validar(){
-    const campos = ['var1','var1en','otrasVars','institucion'];
-    const bar = document.getElementById('validBar');
-    let vacios = 0;
-    campos.forEach(id => {
-      const el = document.getElementById(id);
-      const empty = el.value.trim() === '';
-      el.classList.toggle('invalid', empty);
-      if(empty) vacios++;
-    });
-    if(vacios > 0){
-      bar.style.display = 'block';
-      bar.className = '';
-      bar.textContent = `⚠ Faltan ${vacios} campo(s) obligatorio(s) (marcados en rojo). Las ecuaciones se generan con valores de ejemplo hasta que los completes.`;
-    } else {
-      bar.style.display = 'block';
-      bar.className = 'ok';
-      bar.textContent = '✓ Todos los campos obligatorios completados. Ecuaciones listas.';
+  /* ── 5 PÁRRAFOS ──────────────────────────────────────── */
+  const pars = [
+    {
+      num: 1,
+      tag: 'Teoría',
+      tagStyle: 'background:#e8f0fe;color:#1a56c4;border:1px solid #c5d8fb;',
+      title: `Párrafo 1 — Definición teórica de ${Q(v1)}`,
+      desc: `Define el concepto de ${Q(v1)} con base en literatura académica. Incluye el enlace de la fuente al final del párrafo.`,
+      sources: [
+        { name:'Google Scholar', eq:`(define OR concept) AND (${Q(v1)} OR ${Q(s1)}) OR (${Q(v1en)} OR ${Q(s1en)})`, link:SC },
+        { name:'ScienceDirect Topics', eq:v1en, link:SDT,
+          note:'Busca el concepto como topic académico en ScienceDirect. Sin comillas para mayor amplitud.' },
+        { name:'ScienceDirect',  eq:`define ${Q(v1en)} OR ${Q(s1en)}`, link:SD },
+        { name:'IA — pegar en ChatGPT / Perplexity / Gemini', eq:`define ${Q(v1en)} with citation and reference`, isAI:true },
+      ]
+    },
+    {
+      num: 2,
+      tag: 'Global',
+      tagStyle: 'background:#e6f4ea;color:#1a7a3c;border:1px solid #a8d5b5;',
+      title: `Párrafo 2 — Situación mundial sobre ${Q(v1)}`,
+      desc: `Describe qué ocurre a nivel mundial respecto a ${Q(v1)}, conectado con ${otras}. Incluye 2 o 3 fuentes con sus respectivos enlaces.`,
+      sources: [
+        { name:'América Economía', eq:v1, dualAE:true,
+          note:'Búsqueda restringida solo a la variable principal en español.' },
+        { name:'The New York Times', eq:`site:nytimes.com/ ${Q(v1en)} OR ${Q(s1en)}`, link:GG,
+          note:'Presiona ESC antes de que cargue la página para evitar el paywall.' },
+        { name:'BBC Mundo',  eq:`site:bbc.com/mundo/ ${Q(v1)} OR ${Q(s1)}`, link:GG },
+        { name:'Gallup',     eq:`site:gallup.com/workplace/ ${v1en} after:2021`, link:GG },
+        { name:'OIT / ILO',  eq:`site:ilo.org/ ${Q(v1en)} OR ${Q(s1en)} after:2020`, link:GG,
+          note:'Recomendado si tu tema es de Recursos Humanos.' },
+        { name:'Deutsche Welle', eq:`site:dw.com/ ${Q(v1)} OR ${Q(s1)}`, link:GG },
+        { name:'Banco Mundial',  eq:`site:worldbank.org/ ${Q(v1en)} OR ${Q(s1en)} after:2020`, link:GG },
+        { name:'CEPAL', eq:`site:cepal.org/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG },
+      ]
+    },
+    {
+      num: 3,
+      tag: 'Nacional',
+      tagStyle: 'background:#fce8e6;color:#c0392b;border:1px solid #f5b8b4;',
+      title: `Párrafo 3 — Situación nacional (Perú) sobre ${Q(v1)}`,
+      desc: `Explica qué está ocurriendo en el Perú respecto a ${Q(v1)}. Incluye el enlace de la fuente al final del párrafo.`,
+      sources: [
+        { name:'Actualidad Empresarial', eq:`site:actualidadempresarial.pe/ ${Q(v1)} OR ${Q(s1)}`, link:GG },
+        { name:'El Peruano',      eq:`site:elperuano.pe/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG },
+        { name:'Mundo Empresarial', eq:`site:mundoempresarial.pe/ ${v1} after:2020`, link:GG },
+        { name:'Mercado Negro',   eq:`site:mercadonegro.pe/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG,
+          note:'Usar si tu tema es de Marketing.' },
+        { name:'Peru Retail',     eq:`site:peru-retail.com/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG,
+          note:'Usar si tu tema es de Marketing o Comercio Electrónico.' },
+        { name:'Gestión',         eq:`site:gestion.pe/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG },
+      ]
+    },
+    {
+      num: 4,
+      tag: 'Contribución',
+      tagStyle: 'background:#fef7e0;color:#9a6800;border:1px solid #fce09a;',
+      title: `Párrafo 4 — Contribución de ${Q(v1)} en ${ctxEs}`,
+      desc: `Describe la importancia o contribución de ${Q(v1)} en ${ctxEs}. Elige una sola fuente e incluye el enlace o DOI al final.`,
+      sources: [
+        { name:'Google Scholar', eq:`(${Q(v1en)} OR ${Q(s1en)}) AND (${Q(ctxEn)}) AND (contribution OR impact OR role)`, link:SC },
+        { name:'IA en inglés — ChatGPT / Perplexity', eq:`What is the contribution of ${Q(v1en)} in ${ctxEn}? Give me an author with DOI`, isAI:true },
+        { name:'IA en español — ChatGPT / Perplexity', eq:`¿Cuál es la contribución de ${Q(v1)} en ${ctxEs}? Cita un autor que exista con DOI`, isAI:true },
+      ]
+    },
+    {
+      num: 5,
+      tag: 'Local',
+      tagStyle: 'background:#f3e8fd;color:#7e22ce;border:1px solid #d8b4fd;',
+      title: `Párrafo 5 — Situación local en ${org}`,
+      desc: null,
+      manual: true,
+      hint: `Describe de forma general —sin ser concluyente— cómo <em>${otras}</em> podrían estar incidiendo en <strong>${v1}</strong> en <em>${org}</em>. Puede ser una situación negativa o positiva que justifique la investigación. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda.`
     }
-  }
+  ];
 
-  function setH(id, html){ const el = document.getElementById(id); if(el) el.innerHTML = html; }
-  function setQ(id, txt){ const el = document.getElementById(id); if(el) el.textContent = txt; }
-  function setA(id, url){ const el = document.getElementById(id); if(el) el.href = url; }
+  /* ── RENDER ────────────────────────────────── */
+  $('resTitle').textContent = `Ecuaciones para "${v1}"`;
+  const cont = $('parContainer');
+  cont.innerHTML = '';
 
-  function copyEl(id, btn){
-    const txt = document.getElementById(id).textContent;
-    navigator.clipboard.writeText(txt).then(() => {
-      const orig = btn.textContent;
-      btn.textContent = '✓ OK';
-      btn.classList.add('done');
-      setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1500);
-    });
-  }
+  pars.forEach(p => {
+    let bodyHtml = '';
 
-  // Inicializar al cargar
-  update();
+    if (p.desc) {
+      bodyHtml += `<p class="par-desc">${p.desc}</p>`;
+    }
+
+    if (p.manual) {
+      bodyHtml += `<div class="manual-box">
+        <strong>✍ Redacción personal requerida.</strong><br>${p.hint}
+      </div>`;
+    } else {
+      bodyHtml += '<div class="src-list">';
+      p.sources.forEach((src, i) => {
+        const eid = `eq_${p.num}_${i}`;
+        const noteHtml = src.note ? `<div class="src-note">ℹ ${src.note}</div>` : '';
+        const aiBadge  = src.isAI ? '<span class="ai-badge">IA</span>' : '';
+
+        let actionsHtml = '';
+        if (src.dualAE) {
+          // América Economía: solo variable principal, sin comillas
+          const aeUrl = `${AE}${enc(v1)}#gsc.tab=0&gsc.q=${enc(v1)}&gsc.page=1`;
+          const ggUrl = `${GG}${enc('site:americaeconomia.com/ ' + Q(v1) + ' after:2021')}`;
+          actionsHtml = `
+            <div class="src-actions">
+              <button class="btn-copy" id="cp_${eid}" onclick="cpEq('${eid}','cp_${eid}')">Copiar</button>
+              <div class="dual-search">
+                <a href="${aeUrl}" target="_blank" rel="noopener" class="btn-search">AE Directo</a>
+                <a href="${ggUrl}" target="_blank" rel="noopener" class="btn-search-alt">via Google</a>
+              </div>
+            </div>`;
+        } else if (src.link) {
+          actionsHtml = `
+            <div class="src-actions">
+              <button class="btn-copy" id="cp_${eid}" onclick="cpEq('${eid}','cp_${eid}')">Copiar</button>
+              <a href="${src.link}${enc(src.eq)}" target="_blank" rel="noopener" class="btn-search">Buscar →</a>
+            </div>`;
+        } else {
+          actionsHtml = `
+            <div class="src-actions">
+              <button class="btn-copy" id="cp_${eid}" onclick="cpEq('${eid}','cp_${eid}')">Copiar</button>
+            </div>`;
+        }
+
+        bodyHtml += `
+          <div class="src-row">
+            <div class="src-top">
+              <div class="src-info">
+                <div class="src-name">${src.name}${aiBadge}</div>
+                ${noteHtml}
+                <code class="src-eq" id="${eid}">${escHtml(src.eq)}</code>
+              </div>
+              ${actionsHtml}
+            </div>
+          </div>`;
+      });
+      bodyHtml += '</div>';
+    }
+
+    const card = document.createElement('div');
+    card.className = 'par-card';
+    card.innerHTML = `
+      <div class="par-header" onclick="togglePar(${p.num})">
+        <div class="par-header-left">
+          <span class="par-tag" style="${p.tagStyle}">${p.tag}</span>
+          <span class="par-title">${p.title}</span>
+        </div>
+        <span class="chevron" id="ch${p.num}">▾</span>
+      </div>
+      <div class="par-body" id="bd${p.num}">${bodyHtml}</div>`;
+    cont.appendChild(card);
+  });
+
+  /* ── SWITCH VIEWS ────────────────────────────── */
+  $('step1').style.display = 'none';
+  $('step2').style.display = 'block';
+
+  $('dot1').className = 'step-dot done'; $('lbl1').className = 'step-label';
+  $('dot2').className = 'step-dot active'; $('lbl2').className = 'step-label active';
+}
+
+/* ══════════════════ HELPERS ══════════════════ */
+function goBack() {
+  $('step2').style.display = 'none';
+  $('step1').style.display = 'block';
+  $('dot1').className = 'step-dot active'; $('lbl1').className = 'step-label active';
+  $('dot2').className = 'step-dot';        $('lbl2').className = 'step-label';
+}
+
+function togglePar(n) {
+  const bd = $('bd' + n);
+  const ch = $('ch' + n);
+  const hidden = bd.style.display === 'none';
+  bd.style.display = hidden ? 'block' : 'none';
+  ch.className = 'chevron' + (hidden ? '' : ' closed');
+}
+
+function cpEq(eid, btnId) {
+  const txt = $(eid).textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = $(btnId);
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 2000);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* Dynamic contribution labels */
+function updateCtxLabels() {
+  const v1   = gv('v1');
+  const v1en = gv('v1en');
+  $('lbl_ctx_es').textContent = v1
+    ? 'Área de contribución de ' + v1
+    : 'Área de contribución';
+  $('lbl_ctx_en').textContent = v1en
+    ? 'Área de contribución de ' + v1en
+    : 'Área de contribución (inglés)';
+}
+$('v1').addEventListener('input',   updateCtxLabels);
+$('v1en').addEventListener('input', updateCtxLabels);
+
+/* Enter key on last input */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && $('step1').style.display !== 'none') generate();
+});
 </script>
 </body>
 </html>

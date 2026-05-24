@@ -133,6 +133,48 @@
   }
   .btn-secondary:hover { border-color: var(--black); color: var(--black); }
 
+  /* ── ADD VARIABLE BUTTON ─────────────────────────────── */
+  .btn-add-var {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: none; color: var(--black);
+    border: 1px dashed var(--gray-light); padding: 6px 12px;
+    font-family: Arial, sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer; margin-top: 10px;
+    transition: border-color .15s, color .15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-add-var:hover { border-color: var(--black); border-style: solid; }
+
+  /* ── EXTRA VARIABLE ROW ──────────────────────────────── */
+  .var-extra-row {
+    margin-top: 10px;
+    border: 1px solid var(--gray-pale);
+    padding: 10px 12px;
+    background: var(--gray-bg);
+    position: relative;
+  }
+  .var-extra-row .form-grid { gap: 8px 20px; }
+  .btn-remove-var {
+    position: absolute; top: 8px; right: 8px;
+    background: none; border: 1px solid var(--gray-light);
+    color: var(--gray-mid); font-size: 11px; font-weight: 700;
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0;
+    transition: border-color .15s, color .15s;
+  }
+  .btn-remove-var:hover { border-color: #c0392b; color: #c0392b; }
+
+  /* ── HINT COMMA ──────────────────────────────────────── */
+  .hint-comma {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 11px; color: var(--gray-mid);
+    background: #fef7e0; border: 1px solid #fce09a;
+    padding: 6px 10px; margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .hint-comma strong { color: #9a6800; }
+
   .hint-error {
     font-size: 12px; color: #c0392b;
     margin-top: 8px; display: none;
@@ -312,19 +354,35 @@
       </div>
     </div>
 
-    <!-- Otras variables -->
+    <!-- ══ OTRAS VARIABLES ══════════════════════════════════ -->
     <div class="form-card">
       <div class="form-section-title">Otras variables (independientes / factores)</div>
-      <div class="form-grid">
-        <div class="form-field">
-          <label for="otras_es">En español</label>
-          <input type="text" id="otras_es" placeholder='ej: liderazgo, "cultura organizacional"'>
-        </div>
-        <div class="form-field">
-          <label for="otras_en">En inglés</label>
-          <input type="text" id="otras_en" placeholder='ej: leadership, "organizational culture"'>
+
+      <!-- Hint sobre la coma -->
+      <div class="hint-comma">
+        <span>💡</span>
+        <span>Si tienes <strong>más de una variable</strong>, puedes separarlas con coma (,) en el mismo campo
+          — o usar <strong>"+ Agregar variable"</strong> para tener campos separados.</span>
+      </div>
+
+      <!-- Fila inicial (siempre visible) -->
+      <div id="otras-container">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>En español</label>
+            <input type="text" class="otras-es-input" placeholder='ej: liderazgo, "cultura organizacional"'>
+          </div>
+          <div class="form-field">
+            <label>En inglés</label>
+            <input type="text" class="otras-en-input" placeholder='ej: leadership, "organizational culture"'>
+          </div>
         </div>
       </div>
+
+      <!-- Botón agregar -->
+      <button type="button" class="btn-add-var" onclick="addOtraVar()">
+        + Agregar variable
+      </button>
     </div>
 
     <!-- Organización y contexto -->
@@ -349,6 +407,7 @@
             <option value="las asociaciones">
             <option value="los establecimientos de salud">
             <option value="los colegios profesionales">
+            <option value="la banca (bancos)">
           </datalist>
         </div>
         <div class="form-field">
@@ -364,6 +423,7 @@
             <option value="NGOs">
             <option value="health establishments">
             <option value="social organizations">
+            <option value="banking (banks)">
           </datalist>
         </div>
       </div>
@@ -411,8 +471,8 @@
 const SC  = "https://scholar.google.com/scholar?q=";
 const GG  = "https://www.google.com/search?q=";
 const SD  = "https://www.sciencedirect.com/search?qs=";
-const SDT = "https://www.sciencedirect.com/topics?searchPhrase="; // Topics
-const AE  = "https://www.americaeconomia.com/busqueda?q=";        // búsqueda directa
+const SDT = "https://www.sciencedirect.com/topics?searchPhrase=";
+const AE  = "https://www.americaeconomia.com/busqueda?q=";
 
 /* ══════════════════ HELPERS ══════════════════ */
 const Q   = t => '"' + t + '"';
@@ -422,18 +482,74 @@ const gv  = id => $(id).value.trim();
 
 function clearHint() { $('formHint').style.display = 'none'; }
 
+/* ══════════════════ OTRAS VARIABLES — DINÁMICAS ══════════════════ */
+let varCount = 0;
+
+function addOtraVar() {
+  varCount++;
+  const container = $('otras-container');
+  const div = document.createElement('div');
+  div.className = 'var-extra-row';
+  div.id = `otras-row-${varCount}`;
+  div.innerHTML = `
+    <button type="button" class="btn-remove-var" title="Eliminar" onclick="removeOtraVar(${varCount})">✕</button>
+    <div class="form-grid">
+      <div class="form-field">
+        <label style="font-size:11px;color:var(--gray-mid);font-weight:700;">En español</label>
+        <input type="text" class="otras-es-input" placeholder="ej: motivación laboral">
+      </div>
+      <div class="form-field">
+        <label style="font-size:11px;color:var(--gray-mid);font-weight:700;">En inglés</label>
+        <input type="text" class="otras-en-input" placeholder="ej: work motivation">
+      </div>
+    </div>`;
+  container.appendChild(div);
+
+  /* Focus en el primer input del nuevo row */
+  div.querySelector('.otras-es-input').focus();
+}
+
+function removeOtraVar(id) {
+  const el = $(`otras-row-${id}`);
+  if (el) {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .15s';
+    setTimeout(() => el.remove(), 150);
+  }
+}
+
+/* Recolecta todos los valores de otras variables */
+function getOtrasEs() {
+  const vals = [];
+  document.querySelectorAll('.otras-es-input').forEach(inp => {
+    const v = inp.value.trim();
+    if (v) vals.push(v);
+  });
+  return vals.join(', ') || 'variables independientes';
+}
+
+function getOtrasEn() {
+  const vals = [];
+  document.querySelectorAll('.otras-en-input').forEach(inp => {
+    const v = inp.value.trim();
+    if (v) vals.push(v);
+  });
+  return vals.join(', ') || 'independent variables';
+}
+
 /* ══════════════════ GENERATE ══════════════════ */
 function generate() {
   const v1    = gv('v1');
   const v1en  = gv('v1en');
   if (!v1 || !v1en) { $('formHint').style.display = 'block'; return; }
 
-  const s1    = gv('s1')     || v1;
-  const s1en  = gv('s1en')   || v1en;
-  const otras = gv('otras_es') || 'variables independientes';
-  const ctxEs = gv('ctx_es')   || 'el contexto organizacional';
-  const ctxEn = gv('ctx_en')   || 'the organizational context';
-  const org   = gv('org')      || 'la organización';
+  const s1    = gv('s1')   || v1;
+  const s1en  = gv('s1en') || v1en;
+  const otras = getOtrasEs();
+  const otrasEn = getOtrasEn();
+  const ctxEs = gv('ctx_es') || 'el contexto organizacional';
+  const ctxEn = gv('ctx_en') || 'the organizational context';
+  const org   = gv('org')    || 'la organización';
 
   /* ── 5 PÁRRAFOS ──────────────────────────────────────── */
   const pars = [
@@ -536,7 +652,6 @@ function generate() {
 
         let actionsHtml = '';
         if (src.dualAE) {
-          // América Economía: solo variable principal, sin comillas
           const aeUrl = `${AE}${enc(v1)}#gsc.tab=0&gsc.q=${enc(v1)}&gsc.page=1`;
           const ggUrl = `${GG}${enc('site:americaeconomia.com/ ' + Q(v1) + ' after:2021')}`;
           actionsHtml = `

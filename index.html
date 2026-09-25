@@ -168,6 +168,26 @@
   }
   .btn-secondary:hover { border-color: var(--black); color: var(--black); }
 
+  /* ── GRUPOS DE OTRAS VARIABLES ───────────────────────── */
+  .var-group { padding: 10px 12px 12px; border: 1px solid var(--gray-pale); background: var(--gray-bg); margin-bottom: 10px; }
+  .var-group:last-child { margin-bottom: 0; }
+  .var-group-title { font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
+  .var-group-title .opt { font-weight: 400; color: var(--gray-mid); }
+
+  select {
+    width: 100%; border: 1px solid var(--gray-light); padding: 7px 10px;
+    font-family: Arial, sans-serif; font-size: 13px; color: var(--black);
+    background: var(--white); outline: none;
+  }
+  select:focus { border-color: var(--black); }
+  .otras-status { font-size: 11px; color: var(--gray-mid); margin-top: 10px; line-height: 1.6; }
+  .otras-status .ok { color: #1a7a3c; font-weight: 700; }
+
+  /* ── ICONOS EN ETIQUETAS DE PÁRRAFO ──────────────────── */
+  .par-tag { display: inline-flex; align-items: center; gap: 6px; }
+  .par-tag .ico { font-size: 14px; line-height: 1; display: inline-flex; align-items: center; }
+  .par-tag .ico svg { width: 18px; height: 12px; display: block; border: 1px solid rgba(0,0,0,.25); }
+
   /* ── ADD VARIABLE BUTTON ─────────────────────────────── */
   .btn-add-var {
     display: inline-flex; align-items: center; gap: 5px;
@@ -391,11 +411,11 @@
         <div class="form-grid">
           <div class="form-field">
             <label for="v1">En español<span class="required">*</span></label>
-            <input type="text" id="v1" placeholder="ej: rendimiento laboral" oninput="clearHint()">
+            <input type="text" id="v1" placeholder="Ej. el rendimiento laboral" oninput="clearHint()">
           </div>
           <div class="form-field">
             <label for="s1">Sinónimo en español</label>
-            <input type="text" id="s1" placeholder="ej: rendimiento de trabajo">
+            <input type="text" id="s1" placeholder="Ej. el rendimiento de trabajo">
           </div>
         </div>
       </div>
@@ -418,33 +438,47 @@
 
     <!-- ══ OTRAS VARIABLES ══════════════════════════════════ -->
     <div class="form-card">
-      <div class="form-section-title">Otras variables (independientes / factores)</div>
+      <div class="form-section-title">Otras variables (mediadora o independientes)</div>
 
-      <!-- Hint sobre la coma -->
-      <div class="hint-comma">
-        <span>💡</span>
-        <span>Si tienes <strong>más de una variable</strong>, puedes separarlas con coma (,) en el mismo campo
-          — o usar <strong>"+ Agregar variable"</strong> para tener campos separados.</span>
+      <div class="form-field" style="margin-bottom:12px;">
+        <label for="tipoOtras">Elige el tipo de variable a registrar</label>
+        <select id="tipoOtras" onchange="toggleTipoOtras()">
+          <option value="ind">Principales variables independientes</option>
+          <option value="med">Nombre de la variable mediadora (si existe)</option>
+        </select>
       </div>
 
-      <!-- Fila inicial (siempre visible) -->
-      <div id="otras-container">
+      <div class="var-group" id="grp_ind">
+        <div class="hint-comma">
+          <span>💡</span>
+          <span>Si hay <strong>más de una variable independiente</strong>, sepáralas con coma (,) en el mismo campo.</span>
+        </div>
         <div class="form-grid">
           <div class="form-field">
-            <label>En español</label>
-            <input type="text" class="otras-es-input" placeholder='ej: liderazgo, "cultura organizacional"'>
+            <label for="ind_es">En español</label>
+            <input type="text" id="ind_es" placeholder="Ej. la motivación, el liderazgo, la promoción" oninput="updateOtrasStatus()">
           </div>
           <div class="form-field">
-            <label>En inglés</label>
-            <input type="text" class="otras-en-input" placeholder='ej: leadership, "organizational culture"'>
+            <label for="ind_en">En inglés</label>
+            <input type="text" id="ind_en" placeholder="e.g. motivation, leadership, promotion" oninput="updateOtrasStatus()">
           </div>
         </div>
       </div>
 
-      <!-- Botón agregar -->
-      <button type="button" class="btn-add-var" onclick="addOtraVar()">
-        + Agregar variable
-      </button>
+      <div class="var-group" id="grp_med" style="display:none;">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="med_es">En español</label>
+            <input type="text" id="med_es" placeholder="Ej. la satisfacción laboral" oninput="updateOtrasStatus()">
+          </div>
+          <div class="form-field">
+            <label for="med_en">En inglés</label>
+            <input type="text" id="med_en" placeholder="e.g. job satisfaction" oninput="updateOtrasStatus()">
+          </div>
+        </div>
+      </div>
+
+      <div class="otras-status" id="otrasStatus"></div>
     </div>
 
     <!-- Organización y contexto -->
@@ -549,52 +583,31 @@ const gv  = id => $(id).value.trim();
 
 function clearHint() { $('formHint').style.display = 'none'; }
 
-/* ══════════════════ OTRAS VARIABLES — DINÁMICAS ══════════════════ */
-let varCount = 0;
-
-function addOtraVar() {
-  varCount++;
-  const container = $('otras-container');
-  const div = document.createElement('div');
-  div.className = 'var-extra-row';
-  div.id = `otras-row-${varCount}`;
-  div.innerHTML = `
-    <button type="button" class="btn-remove-var" title="Eliminar" onclick="removeOtraVar(${varCount})">✕</button>
-    <div class="form-grid">
-      <div class="form-field">
-        <label style="font-size:11px;color:var(--gray-mid);font-weight:700;">En español</label>
-        <input type="text" class="otras-es-input" placeholder="ej: motivación laboral">
-      </div>
-      <div class="form-field">
-        <label style="font-size:11px;color:var(--gray-mid);font-weight:700;">En inglés</label>
-        <input type="text" class="otras-en-input" placeholder="ej: work motivation">
-      </div>
-    </div>`;
-  container.appendChild(div);
-  div.querySelector('.otras-es-input').focus();
+/* ══════════════════ OTRAS VARIABLES ══════════════════ */
+function toggleTipoOtras() {
+  const t = $('tipoOtras').value;
+  $('grp_ind').style.display = t === 'ind' ? 'block' : 'none';
+  $('grp_med').style.display = t === 'med' ? 'block' : 'none';
+  updateOtrasStatus();
 }
 
-function removeOtraVar(id) {
-  const el = $(`otras-row-${id}`);
-  if (el) el.remove();
+/* Muestra qué se ha registrado en cada tipo (ambos se usan al generar) */
+function updateOtrasStatus() {
+  const ind = gv('ind_es') || gv('ind_en');
+  const med = gv('med_es') || gv('med_en');
+  const mk = (n, ok) => n + ': ' + (ok ? '<span class="ok">✓ registrada</span>' : 'sin registrar');
+  $('otrasStatus').innerHTML = mk('Independientes', ind) + ' &nbsp;·&nbsp; ' + mk('Mediadora', med) +
+    '<br>Puedes alternar entre las dos opciones en la lista; se conservan ambas.';
 }
 
+
+/* Devuelve el texto de "otras variables" para redactar los párrafos:
+   independientes + (opcional) variable mediadora */
 function getOtrasEs() {
-  const vals = [];
-  document.querySelectorAll('.otras-es-input').forEach(inp => {
-    const v = inp.value.trim();
-    if (v) vals.push(v);
-  });
-  return vals.join(', ') || 'variables independientes';
-}
-
-function getOtrasEn() {
-  const vals = [];
-  document.querySelectorAll('.otras-en-input').forEach(inp => {
-    const v = inp.value.trim();
-    if (v) vals.push(v);
-  });
-  return vals.join(', ') || 'independent variables';
+  const ind = gv('ind_es'), med = gv('med_es');
+  let t = ind || 'variables independientes';
+  if (med) t += ' (con ' + med + ' como variable mediadora)';
+  return t;
 }
 
 /* ══════════════════ SESIÓN: GUARDAR / CARGAR (JSON) ══════════════════ */
@@ -615,17 +628,17 @@ function showSessionMsg(text, ok) {
 }
 
 function collectSession() {
-  const es = [...document.querySelectorAll('.otras-es-input')].map(i => i.value.trim());
-  const en = [...document.querySelectorAll('.otras-en-input')].map(i => i.value.trim());
   return {
     app: SESSION_APP,
-    version: 1,
+    version: 2,
     guardado: new Date().toISOString(),
     principal: {
       es: gv('v1'), sinonimoEs: gv('s1'),
       en: gv('v1en'), sinonimoEn: gv('s1en')
     },
-    otrasVariables: es.map((v, i) => ({ es: v, en: en[i] || '' })),
+    tipoOtras: $('tipoOtras').value,
+    mediadora: { es: gv('med_es'), en: gv('med_en') },
+    independientes: { es: gv('ind_es'), en: gv('ind_en') },
     organizacion: gv('org'),
     contribucion: { es: gv('ctx_es'), en: gv('ctx_en') }
   };
@@ -667,18 +680,20 @@ function loadSession(input) {
       $('ctx_es').value = (d.contribucion && d.contribucion.es) || '';
       $('ctx_en').value = (d.contribucion && d.contribucion.en) || '';
 
-      /* Reconstruir otras variables */
-      document.querySelectorAll('.var-extra-row').forEach(el => el.remove());
-      varCount = 0;
-      const otras = Array.isArray(d.otrasVariables) && d.otrasVariables.length
-        ? d.otrasVariables : [{ es: '', en: '' }];
-      for (let i = 1; i < otras.length; i++) addOtraVar();
-      const esIn = document.querySelectorAll('.otras-es-input');
-      const enIn = document.querySelectorAll('.otras-en-input');
-      otras.forEach((o, i) => {
-        if (esIn[i]) esIn[i].value = o.es || '';
-        if (enIn[i]) enIn[i].value = o.en || '';
-      });
+      /* Variables mediadora e independientes (compatible con sesiones antiguas v1) */
+      if (d.independientes || d.mediadora) {
+        $('med_es').value = (d.mediadora && d.mediadora.es) || '';
+        $('med_en').value = (d.mediadora && d.mediadora.en) || '';
+        $('ind_es').value = (d.independientes && d.independientes.es) || '';
+        $('ind_en').value = (d.independientes && d.independientes.en) || '';
+      } else {
+        const old = Array.isArray(d.otrasVariables) ? d.otrasVariables : [];
+        $('med_es').value = ''; $('med_en').value = '';
+        $('ind_es').value = old.map(o => o.es).filter(Boolean).join(', ');
+        $('ind_en').value = old.map(o => o.en).filter(Boolean).join(', ');
+      }
+      $('tipoOtras').value = (d.tipoOtras === 'med') ? 'med' : 'ind';
+      toggleTipoOtras();
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
 
       clearHint();
@@ -705,7 +720,6 @@ function generate() {
   const s1    = gv('s1')   || v1;
   const s1en  = gv('s1en') || v1en;
   const otras = getOtrasEs();
-  const otrasEn = getOtrasEn();
   const ctxEs = gv('ctx_es') || 'el contexto organizacional';
   const ctxEn = gv('ctx_en') || 'the organizational context';
   const org   = gv('org')    || 'la organización';
@@ -715,6 +729,7 @@ function generate() {
     {
       num: 1,
       tag: 'Teoría',
+      icon: `📖`,
       tagStyle: 'background:#e8f0fe;color:#1a56c4;border:1px solid #c5d8fb;',
       title: `Párrafo 1 — Definición teórica de ${Q(v1)}`,
       desc: `Define el concepto de ${Q(v1)} con base en literatura académica. Incluye el enlace de la fuente al final del párrafo.`,
@@ -729,6 +744,7 @@ function generate() {
     {
       num: 2,
       tag: 'Global',
+      icon: `🌎`,
       tagStyle: 'background:#e6f4ea;color:#1a7a3c;border:1px solid #a8d5b5;',
       title: `Párrafo 2 — Situación mundial sobre ${Q(v1)}`,
       desc: `Describe qué ocurre a nivel mundial respecto a ${Q(v1)}, conectado con ${otras}. Incluye 2 o 3 fuentes con sus respectivos enlaces.`,
@@ -749,6 +765,7 @@ function generate() {
     {
       num: 3,
       tag: 'Nacional',
+      icon: `<svg viewBox="0 0 3 2" aria-label="Perú" role="img"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#D91023"/><rect x="2" width="1" height="2" fill="#D91023"/></svg>`,
       tagStyle: 'background:#fce8e6;color:#c0392b;border:1px solid #f5b8b4;',
       title: `Párrafo 3 — Situación nacional (Perú) sobre ${Q(v1)}`,
       desc: `Explica qué está ocurriendo en el Perú respecto a ${Q(v1)}. Incluye el enlace de la fuente al final del párrafo.`,
@@ -766,6 +783,7 @@ function generate() {
     {
       num: 4,
       tag: 'Contribución',
+      icon: `🤝`,
       tagStyle: 'background:#fef7e0;color:#9a6800;border:1px solid #fce09a;',
       title: `Párrafo 4 — Contribución de ${Q(v1)} en ${ctxEs}`,
       desc: `Describe la importancia o contribución de ${Q(v1)} en ${ctxEs}. Elige una sola fuente e incluye el enlace o DOI al final.`,
@@ -778,6 +796,7 @@ function generate() {
     {
       num: 5,
       tag: 'Local',
+      icon: `📍`,
       tagStyle: 'background:#f3e8fd;color:#7e22ce;border:1px solid #d8b4fd;',
       title: `Párrafo 5 — Situación local en ${org}`,
       desc: null,
@@ -854,7 +873,7 @@ function generate() {
     card.innerHTML = `
       <div class="par-header" onclick="togglePar(${p.num})">
         <div class="par-header-left">
-          <span class="par-tag" style="${p.tagStyle}">${p.tag}</span>
+          <span class="par-tag" style="${p.tagStyle}"><span class="ico">${p.icon}</span>${p.tag}</span>
           <span class="par-title">${escHtml(p.title)}</span>
         </div>
         <span class="chevron" id="ch${p.num}">▾</span>
@@ -913,6 +932,7 @@ function updateCtxLabels() {
     ? 'Área de contribución de ' + v1en
     : 'Área de contribución (inglés)';
 }
+updateOtrasStatus();
 $('v1').addEventListener('input',   updateCtxLabels);
 $('v1en').addEventListener('input', updateCtxLabels);
 

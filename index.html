@@ -79,6 +79,20 @@
   /* ── LAYOUT ─────────────────────────────────────────── */
   main { max-width: 820px; margin: 0 auto; padding: 2rem; }
 
+  /* ── SESIÓN (guardar / cargar) ───────────────────────── */
+  .session-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap;
+    border: 1px solid var(--gray-pale); background: var(--gray-bg);
+    padding: 10px 14px; margin-bottom: 1rem;
+  }
+  .session-bar .session-text { font-size: 12px; color: var(--gray-dark); line-height: 1.5; }
+  .session-bar .session-text strong { color: var(--black); }
+  .session-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .session-msg { font-size: 12px; margin-bottom: 1rem; padding: 8px 12px; border: 1px solid; display: none; }
+  .session-msg.ok  { display: block; color: #1a7a3c; background: #e6f4ea; border-color: #a8d5b5; }
+  .session-msg.err { display: block; color: #c0392b; background: #fce8e6; border-color: #f5b8b4; }
+
   /* ── FORM ───────────────────────────────────────────── */
   .form-section-title {
     font-size: 11px;
@@ -106,12 +120,33 @@
     font-family: Arial, sans-serif;
     font-size: 13px;
     color: var(--black);
+    background: var(--white);
     outline: none;
     transition: border-color .15s;
   }
   input[type="text"]:focus { border-color: var(--black); }
   input[type="text"]::placeholder { color: var(--gray-light); }
   .required { color: #c0392b; margin-left: 2px; }
+
+  /* ── BLOQUES DE IDIOMA (variable principal) ──────────── */
+  .lang-block { padding: 12px 14px 14px; margin-bottom: 10px; border: 1px solid; border-left-width: 5px; }
+  .lang-block:last-child { margin-bottom: 0; }
+  .lang-es { background: #fff6cc; border-color: #f0d36a; border-left-color: #e0a800; }
+  .lang-en { background: #e3eeff; border-color: #a9c6f5; border-left-color: #1a56c4; }
+  .lang-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lang-es .lang-title { color: #8a6100; }
+  .lang-en .lang-title { color: #1a56c4; }
+  .lang-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; color: #fff; letter-spacing: 0.06em; }
+  .lang-es .lang-badge { background: #e0a800; }
+  .lang-en .lang-badge { background: #1a56c4; }
+  .lang-es input[type="text"] { border-color: #e6cf7a; }
+  .lang-en input[type="text"] { border-color: #a9c6f5; }
+  .lang-es input[type="text"]:focus { border-color: #e0a800; }
+  .lang-en input[type="text"]:focus { border-color: #1a56c4; }
 
   .btn-primary {
     display: block; width: 100%;
@@ -187,6 +222,7 @@
     flex-wrap: wrap; gap: 10px;
   }
   .results-header h2 { font-size: 17px; font-weight: 700; }
+  .results-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
   /* ── PARAGRAPH CARDS ─────────────────────────────────── */
   .par-card {
@@ -331,25 +367,51 @@
   <!-- ═══════════════════════ PASO 1 ═══════════════════════ -->
   <div id="step1">
 
+    <!-- Sesión: guardar / cargar -->
+    <div class="session-bar">
+      <div class="session-text">
+        <strong>Sesión de trabajo:</strong> guarda tus datos en un archivo
+        y cárgalo en otra ocasión para no volver a escribirlos.
+      </div>
+      <div class="session-btns">
+        <button type="button" class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
+        <button type="button" class="btn-secondary" onclick="document.getElementById('sessionFile').click()">📂 Cargar sesión</button>
+        <input type="file" id="sessionFile" accept=".json,application/json" style="display:none" onchange="loadSession(this)">
+      </div>
+    </div>
+    <div class="session-msg" id="sessionMsg"></div>
+
     <!-- Variable principal -->
     <div class="form-card">
       <div class="form-section-title">Variable principal de estudio</div>
-      <div class="form-grid">
-        <div class="form-field">
-          <label for="v1">En español<span class="required">*</span></label>
-          <input type="text" id="v1" placeholder="ej: rendimiento laboral" oninput="clearHint()">
+
+      <!-- Español (amarillo) -->
+      <div class="lang-block lang-es">
+        <div class="lang-title"><span class="lang-badge">ES</span> Español</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="v1">En español<span class="required">*</span></label>
+            <input type="text" id="v1" placeholder="ej: rendimiento laboral" oninput="clearHint()">
+          </div>
+          <div class="form-field">
+            <label for="s1">Sinónimo en español</label>
+            <input type="text" id="s1" placeholder="ej: rendimiento de trabajo">
+          </div>
         </div>
-        <div class="form-field">
-          <label for="s1">Sinónimo en español</label>
-          <input type="text" id="s1" placeholder="ej: rendimiento de trabajo">
-        </div>
-        <div class="form-field">
-          <label for="v1en">En inglés<span class="required">*</span></label>
-          <input type="text" id="v1en" placeholder="ej: job performance" oninput="clearHint()">
-        </div>
-        <div class="form-field">
-          <label for="s1en">Sinónimo en inglés</label>
-          <input type="text" id="s1en" placeholder="ej: work performance">
+      </div>
+
+      <!-- Inglés (azul) -->
+      <div class="lang-block lang-en">
+        <div class="lang-title"><span class="lang-badge">EN</span> English</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="v1en">En inglés<span class="required">*</span></label>
+            <input type="text" id="v1en" placeholder="ej: job performance" oninput="clearHint()">
+          </div>
+          <div class="form-field">
+            <label for="s1en">Sinónimo en inglés</label>
+            <input type="text" id="s1en" placeholder="ej: work performance">
+          </div>
         </div>
       </div>
     </div>
@@ -389,8 +451,8 @@
     <div class="form-card">
       <div class="form-section-title">Organización y contexto de la investigación</div>
       <div class="form-field" style="margin-bottom:12px;">
-        <label for="org">Nombre de la organización / empresa</label>
-        <input type="text" id="org" placeholder="ej: Municipalidad Provincial de Huaraz">
+        <label for="org">Nombre de la organización / empresa / Contexto</label>
+        <input type="text" id="org" placeholder="ej: Municipalidad X / BCP / Transmisiones en vivo">
       </div>
       <div class="form-grid">
         <div class="form-field">
@@ -445,8 +507,13 @@
 
     <div class="results-header">
       <h2 id="resTitle"></h2>
-      <button class="btn-secondary" onclick="goBack()">← Editar datos</button>
+      <div class="results-actions">
+        <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
+        <button class="btn-secondary" onclick="goBack()">← Editar datos</button>
+      </div>
     </div>
+
+    <div class="session-msg" id="sessionMsg2"></div>
 
     <div id="parContainer"></div>
 
@@ -504,21 +571,14 @@ function addOtraVar() {
       </div>
     </div>`;
   container.appendChild(div);
-
-  /* Focus en el primer input del nuevo row */
   div.querySelector('.otras-es-input').focus();
 }
 
 function removeOtraVar(id) {
   const el = $(`otras-row-${id}`);
-  if (el) {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity .15s';
-    setTimeout(() => el.remove(), 150);
-  }
+  if (el) el.remove();
 }
 
-/* Recolecta todos los valores de otras variables */
 function getOtrasEs() {
   const vals = [];
   document.querySelectorAll('.otras-es-input').forEach(inp => {
@@ -535,6 +595,105 @@ function getOtrasEn() {
     if (v) vals.push(v);
   });
   return vals.join(', ') || 'independent variables';
+}
+
+/* ══════════════════ SESIÓN: GUARDAR / CARGAR (JSON) ══════════════════ */
+const SESSION_APP = 'AntoMatic-Ecuaciones-Problema';
+
+function showSessionMsg(text, ok) {
+  ['sessionMsg', 'sessionMsg2'].forEach(id => {
+    const m = $(id);
+    if (!m) return;
+    const visible = m.closest('#step2') ? $('step2').style.display !== 'none'
+                                        : $('step1').style.display !== 'none';
+    if (!visible) return;
+    m.textContent = text;
+    m.className = 'session-msg ' + (ok ? 'ok' : 'err');
+    clearTimeout(m._t);
+    m._t = setTimeout(() => { m.className = 'session-msg'; }, 6000);
+  });
+}
+
+function collectSession() {
+  const es = [...document.querySelectorAll('.otras-es-input')].map(i => i.value.trim());
+  const en = [...document.querySelectorAll('.otras-en-input')].map(i => i.value.trim());
+  return {
+    app: SESSION_APP,
+    version: 1,
+    guardado: new Date().toISOString(),
+    principal: {
+      es: gv('v1'), sinonimoEs: gv('s1'),
+      en: gv('v1en'), sinonimoEn: gv('s1en')
+    },
+    otrasVariables: es.map((v, i) => ({ es: v, en: en[i] || '' })),
+    organizacion: gv('org'),
+    contribucion: { es: gv('ctx_es'), en: gv('ctx_en') }
+  };
+}
+
+function saveSession() {
+  const data = collectSession();
+  const slug = (data.principal.es || 'sesion')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    .slice(0, 40) || 'sesion';
+  const fecha = new Date().toISOString().slice(0, 10);
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `antomatic-${slug}-${fecha}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showSessionMsg('Sesión guardada. Cárgala en otra ocasión con "Cargar sesión".', true);
+}
+
+function loadSession(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const d = JSON.parse(reader.result);
+      if (!d || d.app !== SESSION_APP || !d.principal) throw new Error('formato');
+
+      $('v1').value     = d.principal.es || '';
+      $('s1').value     = d.principal.sinonimoEs || '';
+      $('v1en').value   = d.principal.en || '';
+      $('s1en').value   = d.principal.sinonimoEn || '';
+      $('org').value    = d.organizacion || '';
+      $('ctx_es').value = (d.contribucion && d.contribucion.es) || '';
+      $('ctx_en').value = (d.contribucion && d.contribucion.en) || '';
+
+      /* Reconstruir otras variables */
+      document.querySelectorAll('.var-extra-row').forEach(el => el.remove());
+      varCount = 0;
+      const otras = Array.isArray(d.otrasVariables) && d.otrasVariables.length
+        ? d.otrasVariables : [{ es: '', en: '' }];
+      for (let i = 1; i < otras.length; i++) addOtraVar();
+      const esIn = document.querySelectorAll('.otras-es-input');
+      const enIn = document.querySelectorAll('.otras-en-input');
+      otras.forEach((o, i) => {
+        if (esIn[i]) esIn[i].value = o.es || '';
+        if (enIn[i]) enIn[i].value = o.en || '';
+      });
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+
+      clearHint();
+      updateCtxLabels();
+      showSessionMsg('Sesión cargada: ' + file.name, true);
+    } catch (e) {
+      showSessionMsg('No se pudo cargar: el archivo no es una sesión válida de AntoMatic.', false);
+    }
+    input.value = '';
+  };
+  reader.onerror = () => {
+    showSessionMsg('No se pudo leer el archivo.', false);
+    input.value = '';
+  };
+  reader.readAsText(file);
 }
 
 /* ══════════════════ GENERATE ══════════════════ */
@@ -623,7 +782,7 @@ function generate() {
       title: `Párrafo 5 — Situación local en ${org}`,
       desc: null,
       manual: true,
-      hint: `Describe de forma general —sin ser concluyente— cómo <em>${otras}</em> podrían estar incidiendo en <strong>${v1}</strong> en <em>${org}</em>. Puede ser una situación negativa o positiva que justifique la investigación. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda.`
+      hint: `Describe de forma general —sin ser concluyente— cómo <em>${escHtml(otras)}</em> podrían estar incidiendo en <strong>${escHtml(v1)}</strong> en <em>${escHtml(org)}</em>. Puede ser una situación negativa o positiva que justifique la investigación. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda.`
     }
   ];
 
@@ -696,7 +855,7 @@ function generate() {
       <div class="par-header" onclick="togglePar(${p.num})">
         <div class="par-header-left">
           <span class="par-tag" style="${p.tagStyle}">${p.tag}</span>
-          <span class="par-title">${p.title}</span>
+          <span class="par-title">${escHtml(p.title)}</span>
         </div>
         <span class="chevron" id="ch${p.num}">▾</span>
       </div>
@@ -740,7 +899,7 @@ function cpEq(eid, btnId) {
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 /* Dynamic contribution labels */
@@ -757,7 +916,7 @@ function updateCtxLabels() {
 $('v1').addEventListener('input',   updateCtxLabels);
 $('v1en').addEventListener('input', updateCtxLabels);
 
-/* Enter key on last input */
+/* Enter key on step 1 */
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && $('step1').style.display !== 'none') generate();
 });

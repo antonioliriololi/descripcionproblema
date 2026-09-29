@@ -244,20 +244,21 @@
   .results-header h2 { font-size: 17px; font-weight: 700; }
   .results-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  /* ── PARAGRAPH CARDS ─────────────────────────────────── */
+  /* ── PARAGRAPH CARDS (cada párrafo con su color) ─────── */
   .par-card {
-    border: 1px solid var(--gray-pale);
+    border: 1px solid var(--pc-border, var(--gray-pale));
+    border-left: 5px solid var(--pc-accent, var(--black));
     margin-bottom: .75rem;
     overflow: hidden;
   }
   .par-header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 12px 16px; cursor: pointer;
-    background: var(--gray-bg);
-    border-bottom: 1px solid var(--gray-pale);
+    background: var(--pc-header, var(--gray-bg));
+    border-bottom: 1px solid var(--pc-border, var(--gray-pale));
     gap: 12px;
   }
-  .par-header:hover { background: var(--gray-pale); }
+  .par-header:hover { filter: brightness(.96); }
   .par-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex: 1; }
   .par-tag {
     font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
@@ -268,16 +269,17 @@
   .chevron { font-size: 16px; color: var(--gray-mid); flex-shrink: 0; transition: transform .2s; }
   .chevron.closed { transform: rotate(-90deg); }
 
-  .par-body { padding: 14px 16px; }
+  .par-body { padding: 14px 16px; background: var(--pc-body, var(--white)); }
   .par-desc {
     font-size: 13px; color: var(--gray-dark); margin-bottom: 14px;
-    line-height: 1.6; padding-bottom: 12px; border-bottom: 1px solid var(--gray-pale);
+    line-height: 1.6; padding-bottom: 12px; border-bottom: 1px solid var(--pc-border, var(--gray-pale));
   }
 
   /* ── SOURCE ROWS ─────────────────────────────────────── */
   .src-list { display: flex; flex-direction: column; gap: 8px; }
   .src-row {
     border: 1px solid var(--gray-pale);
+    background: var(--white);
     padding: 10px 12px;
   }
   .src-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
@@ -331,7 +333,7 @@
 
   /* ── MANUAL PARAGRAPH ───────────────────────────────── */
   .manual-box {
-    background: var(--gray-bg); border-left: 3px solid var(--black);
+    background: var(--white); border-left: 3px solid var(--pc-accent, var(--black));
     padding: 12px 16px; font-size: 13px; color: var(--gray-dark);
     line-height: 1.7;
   }
@@ -344,6 +346,27 @@
     font-size: 12px; color: var(--gray-dark); line-height: 1.8;
   }
   .tips-box strong { color: var(--black); }
+
+  /* ── COMPILADOR DP ───────────────────────────────────── */
+  .steps .step-item { cursor: pointer; }
+  .comp-intro { font-size: 12px; color: var(--gray-dark); line-height: 1.6; margin-bottom: 1rem; }
+  .comp-card .par-header { cursor: default; }
+  .comp-card .par-header:hover { filter: none; }
+  .comp-src {
+    border: 1px solid var(--gray-pale); background: var(--white);
+    padding: 10px 12px 12px; margin-bottom: 8px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .comp-src-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .comp-src-label { font-size: 12px; font-weight: 700; color: var(--black); }
+  .btn-remove-src {
+    background: none; border: 1px solid var(--gray-light); color: var(--gray-mid);
+    font-size: 11px; font-weight: 700; width: 22px; height: 22px; cursor: pointer; padding: 0;
+  }
+  .btn-remove-src:hover { border-color: #c0392b; color: #c0392b; }
+  .comp-add { margin-top: 2px; }
+  .comp-footer { margin-top: 1.25rem; }
+  .comp-footer .hint-error { margin-top: 0; margin-bottom: 8px; }
 
   /* ── FOOTER ──────────────────────────────────────────── */
   footer {
@@ -371,14 +394,19 @@
 </header>
 
 <div class="steps">
-  <div class="step-item">
+  <div class="step-item" onclick="gotoStep(1)">
     <div class="step-dot active" id="dot1">1</div>
     <span class="step-label active" id="lbl1">Datos del proyecto</span>
   </div>
   <div class="step-sep"></div>
-  <div class="step-item">
+  <div class="step-item" onclick="gotoStep(2)">
     <div class="step-dot" id="dot2">2</div>
     <span class="step-label" id="lbl2">Ecuaciones de búsqueda</span>
+  </div>
+  <div class="step-sep"></div>
+  <div class="step-item" onclick="gotoStep(3)">
+    <div class="step-dot" id="dot3">3</div>
+    <span class="step-label" id="lbl3">Compilador DP</span>
   </div>
 </div>
 
@@ -544,6 +572,7 @@
       <div class="results-actions">
         <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
         <button class="btn-secondary" onclick="goBack()">← Editar datos</button>
+        <button class="btn-secondary" onclick="gotoStep(3)">Compilador DP →</button>
       </div>
     </div>
 
@@ -561,6 +590,35 @@
 
   </div><!-- /step2 -->
 
+
+  <!-- ═══════════════════════ PASO 3: COMPILADOR DP ═══════════════════════ -->
+  <div id="step3" style="display:none;">
+
+    <div class="results-header">
+      <h2>Compilador DP</h2>
+      <div class="results-actions">
+        <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
+        <button class="btn-secondary" onclick="gotoStep(2)">← Ecuaciones</button>
+      </div>
+    </div>
+
+    <div class="session-msg" id="sessionMsg3"></div>
+
+    <p class="comp-intro">
+      Registra aquí las fuentes que elegiste para cada párrafo de la Descripción del Problema:
+      el <strong>título</strong> y la <strong>URL o DOI</strong>. Usa <strong>+ Agregar fuente</strong>
+      si un párrafo tiene más de una. Al final descarga el reporte en .txt.
+    </p>
+
+    <div id="compContainer"></div>
+
+    <div class="comp-footer">
+      <p class="hint-error" id="compHint">⚠ Registra al menos una fuente (título o URL/DOI) para generar el reporte.</p>
+      <button class="btn-primary" style="margin-top:0" onclick="downloadReport()">⬇ Generar reporte .txt</button>
+    </div>
+
+  </div><!-- /step3 -->
+
 </main>
 
 <footer>
@@ -573,6 +631,8 @@ const SC  = "https://scholar.google.com/scholar?q=";
 const GG  = "https://www.google.com/search?q=";
 const SD  = "https://www.sciencedirect.com/search?qs=";
 const SDT = "https://www.sciencedirect.com/topics?searchPhrase=";
+const SP  = "https://link.springer.com/search?query=";
+const EM  = "https://www.emerald.com/insight/search?q=";
 const AE  = "https://www.americaeconomia.com/busqueda?q=";
 
 /* ══════════════════ HELPERS ══════════════════ */
@@ -614,11 +674,11 @@ function getOtrasEs() {
 const SESSION_APP = 'AntoMatic-Ecuaciones-Problema';
 
 function showSessionMsg(text, ok) {
-  ['sessionMsg', 'sessionMsg2'].forEach(id => {
+  ['sessionMsg', 'sessionMsg2', 'sessionMsg3'].forEach(id => {
     const m = $(id);
     if (!m) return;
-    const visible = m.closest('#step2') ? $('step2').style.display !== 'none'
-                                        : $('step1').style.display !== 'none';
+    const stepEl = m.closest('#step3') || m.closest('#step2') || m.closest('#step1');
+    const visible = stepEl && stepEl.style.display !== 'none';
     if (!visible) return;
     m.textContent = text;
     m.className = 'session-msg ' + (ok ? 'ok' : 'err');
@@ -640,14 +700,15 @@ function collectSession() {
     mediadora: { es: gv('med_es'), en: gv('med_en') },
     independientes: { es: gv('ind_es'), en: gv('ind_en') },
     organizacion: gv('org'),
-    contribucion: { es: gv('ctx_es'), en: gv('ctx_en') }
+    contribucion: { es: gv('ctx_es'), en: gv('ctx_en') },
+    compilador: compData
   };
 }
 
 function saveSession() {
   const data = collectSession();
   const slug = (data.principal.es || 'sesion')
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
     .slice(0, 40) || 'sesion';
   const fecha = new Date().toISOString().slice(0, 10);
@@ -696,6 +757,16 @@ function loadSession(input) {
       toggleTipoOtras();
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
 
+      if (d.compilador && typeof d.compilador === 'object') {
+        [1,2,3,4,5].forEach(n => {
+          const arr = Array.isArray(d.compilador[n]) ? d.compilador[n] : [];
+          compData[n] = arr.length
+            ? arr.map(s => ({ t: String((s && s.t) || ''), u: String((s && s.u) || '') }))
+            : [emptySrc()];
+        });
+        renderCompiler();
+      }
+
       clearHint();
       updateCtxLabels();
       showSessionMsg('Sesión cargada: ' + file.name, true);
@@ -725,12 +796,15 @@ function generate() {
   const org   = gv('org')    || 'la organización';
 
   /* ── 5 PÁRRAFOS ──────────────────────────────────────── */
+  /* colors: header (fondo más oscuro que la etiqueta), body (tinte muy suave),
+             border y accent (borde izquierdo) */
   const pars = [
     {
       num: 1,
       tag: 'Teoría',
       icon: `📖`,
       tagStyle: 'background:#e8f0fe;color:#1a56c4;border:1px solid #c5d8fb;',
+      colors: { header:'#c9dcfb', body:'#f5f8ff', border:'#a9c6f5', accent:'#1a56c4' },
       title: `Párrafo 1 — Definición teórica de ${Q(v1)}`,
       desc: `Define el concepto de ${Q(v1)} con base en literatura académica. Incluye el enlace de la fuente al final del párrafo.`,
       sources: [
@@ -738,6 +812,10 @@ function generate() {
         { name:'ScienceDirect Topics', eq:v1en, link:SDT,
           note:'Busca el concepto como topic académico en ScienceDirect. Sin comillas para mayor amplitud.' },
         { name:'ScienceDirect',  eq:`define ${Q(v1en)} OR ${Q(s1en)}`, link:SD },
+        { name:'SpringerLink',   eq:`${v1en} definition`, link:SP,
+          note:'Busca la definición del concepto en libros y artículos de SpringerLink.' },
+        { name:'Emerald Insight', eq:`${v1en} definition`, link:EM,
+          note:'Especialmente útil para temas de gestión, marketing y recursos humanos.' },
         { name:'IA — pegar en ChatGPT / Perplexity / Gemini', eq:`define ${Q(v1en)} with citation and reference`, isAI:true },
       ]
     },
@@ -746,6 +824,7 @@ function generate() {
       tag: 'Global',
       icon: `🌎`,
       tagStyle: 'background:#e6f4ea;color:#1a7a3c;border:1px solid #a8d5b5;',
+      colors: { header:'#c3e5cc', body:'#f4fbf6', border:'#93cba5', accent:'#1a7a3c' },
       title: `Párrafo 2 — Situación mundial sobre ${Q(v1)}`,
       desc: `Describe qué ocurre a nivel mundial respecto a ${Q(v1)}, conectado con ${otras}. Incluye 2 o 3 fuentes con sus respectivos enlaces.`,
       sources: [
@@ -767,6 +846,7 @@ function generate() {
       tag: 'Nacional',
       icon: `<svg viewBox="0 0 3 2" aria-label="Perú" role="img"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#D91023"/><rect x="2" width="1" height="2" fill="#D91023"/></svg>`,
       tagStyle: 'background:#fce8e6;color:#c0392b;border:1px solid #f5b8b4;',
+      colors: { header:'#f6cac6', body:'#fef6f5', border:'#eba29b', accent:'#c0392b' },
       title: `Párrafo 3 — Situación nacional (Perú) sobre ${Q(v1)}`,
       desc: `Explica qué está ocurriendo en el Perú respecto a ${Q(v1)}. Incluye el enlace de la fuente al final del párrafo.`,
       sources: [
@@ -785,6 +865,7 @@ function generate() {
       tag: 'Contribución',
       icon: `🤝`,
       tagStyle: 'background:#fef7e0;color:#9a6800;border:1px solid #fce09a;',
+      colors: { header:'#fbe9a6', body:'#fffcf0', border:'#efd070', accent:'#c58a00' },
       title: `Párrafo 4 — Contribución de ${Q(v1)} en ${ctxEs}`,
       desc: `Describe la importancia o contribución de ${Q(v1)} en ${ctxEs}. Elige una sola fuente e incluye el enlace o DOI al final.`,
       sources: [
@@ -798,6 +879,7 @@ function generate() {
       tag: 'Local',
       icon: `📍`,
       tagStyle: 'background:#f3e8fd;color:#7e22ce;border:1px solid #d8b4fd;',
+      colors: { header:'#e4cdfa', body:'#faf5ff', border:'#c79bf3', accent:'#7e22ce' },
       title: `Párrafo 5 — Situación local en ${org}`,
       desc: null,
       manual: true,
@@ -868,8 +950,11 @@ function generate() {
       bodyHtml += '</div>';
     }
 
+    const c = p.colors;
     const card = document.createElement('div');
     card.className = 'par-card';
+    card.setAttribute('style',
+      `--pc-header:${c.header};--pc-body:${c.body};--pc-border:${c.border};--pc-accent:${c.accent};`);
     card.innerHTML = `
       <div class="par-header" onclick="togglePar(${p.num})">
         <div class="par-header-left">
@@ -883,19 +968,137 @@ function generate() {
   });
 
   /* ── SWITCH VIEWS ────────────────────────────── */
-  $('step1').style.display = 'none';
-  $('step2').style.display = 'block';
+  showStep(2);
+}
 
-  $('dot1').className = 'step-dot done'; $('lbl1').className = 'step-label';
-  $('dot2').className = 'step-dot active'; $('lbl2').className = 'step-label active';
+/* ══════════════════ NAVEGACIÓN ENTRE PESTAÑAS ══════════════════ */
+function showStep(n) {
+  [1, 2, 3].forEach(i => {
+    $('step' + i).style.display = (i === n) ? 'block' : 'none';
+    $('dot' + i).className = 'step-dot' + (i === n ? ' active' : (i < n ? ' done' : ''));
+    $('lbl' + i).className = 'step-label' + (i === n ? ' active' : '');
+  });
+  window.scrollTo(0, 0);
+}
+
+function gotoStep(n) {
+  if (n === 2) {
+    /* Regenera con los datos actuales; si faltan, vuelve al paso 1 con el aviso */
+    if (gv('v1') && gv('v1en')) generate();
+    else { showStep(1); $('formHint').style.display = 'block'; }
+    return;
+  }
+  showStep(n);
 }
 
 /* ══════════════════ HELPERS ══════════════════ */
-function goBack() {
-  $('step2').style.display = 'none';
-  $('step1').style.display = 'block';
-  $('dot1').className = 'step-dot active'; $('lbl1').className = 'step-label active';
-  $('dot2').className = 'step-dot';        $('lbl2').className = 'step-label';
+function goBack() { showStep(1); }
+
+/* ══════════════════ COMPILADOR DP ══════════════════ */
+const PERU_FLAG = `<svg viewBox="0 0 3 2" aria-label="Perú" role="img"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#D91023"/><rect x="2" width="1" height="2" fill="#D91023"/></svg>`;
+const COMP_META = [
+  { num:1, tag:'Teoría',       icon:'📖',      tagStyle:'background:#e8f0fe;color:#1a56c4;border:1px solid #c5d8fb;', colors:{ header:'#c9dcfb', body:'#f5f8ff', border:'#a9c6f5', accent:'#1a56c4' }, name:'Definición teórica' },
+  { num:2, tag:'Global',       icon:'🌎',      tagStyle:'background:#e6f4ea;color:#1a7a3c;border:1px solid #a8d5b5;', colors:{ header:'#c3e5cc', body:'#f4fbf6', border:'#93cba5', accent:'#1a7a3c' }, name:'Situación mundial' },
+  { num:3, tag:'Nacional',     icon:PERU_FLAG, tagStyle:'background:#fce8e6;color:#c0392b;border:1px solid #f5b8b4;', colors:{ header:'#f6cac6', body:'#fef6f5', border:'#eba29b', accent:'#c0392b' }, name:'Situación nacional (Perú)' },
+  { num:4, tag:'Contribución', icon:'🤝',      tagStyle:'background:#fef7e0;color:#9a6800;border:1px solid #fce09a;', colors:{ header:'#fbe9a6', body:'#fffcf0', border:'#efd070', accent:'#c58a00' }, name:'Contribución' },
+  { num:5, tag:'Local',        icon:'📍',      tagStyle:'background:#f3e8fd;color:#7e22ce;border:1px solid #d8b4fd;', colors:{ header:'#e4cdfa', body:'#faf5ff', border:'#c79bf3', accent:'#7e22ce' }, name:'Situación local' }
+];
+const emptySrc = () => ({ t: '', u: '' });
+const compData = { 1:[emptySrc()], 2:[emptySrc()], 3:[emptySrc()], 4:[emptySrc()], 5:[emptySrc()] };
+
+function renderCompiler() {
+  const cont = $('compContainer');
+  cont.innerHTML = '';
+  COMP_META.forEach(m => {
+    const list = compData[m.num];
+    const c = m.colors;
+    const rows = list.map((s, i) => `
+      <div class="comp-src">
+        <div class="comp-src-head">
+          <span class="comp-src-label">Párrafo ${m.num} - Fuente ${i + 1}</span>
+          ${list.length > 1 ? `<button type="button" class="btn-remove-src" title="Quitar esta fuente" onclick="removeSrc(${m.num},${i})">✕</button>` : ''}
+        </div>
+        <div class="form-field">
+          <label for="ct_${m.num}_${i}">Título</label>
+          <input type="text" id="ct_${m.num}_${i}" value="${escHtml(s.t)}" placeholder="Título del documento o de la página"
+                 oninput="compData[${m.num}][${i}].t=this.value">
+        </div>
+        <div class="form-field">
+          <label for="cu_${m.num}_${i}">URL o DOI</label>
+          <input type="text" id="cu_${m.num}_${i}" value="${escHtml(s.u)}" placeholder="https://... o 10.xxxx/xxxxx"
+                 oninput="compData[${m.num}][${i}].u=this.value">
+        </div>
+      </div>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'par-card comp-card';
+    card.setAttribute('style', `--pc-header:${c.header};--pc-body:${c.body};--pc-border:${c.border};--pc-accent:${c.accent};`);
+    card.innerHTML = `
+      <div class="par-header">
+        <div class="par-header-left">
+          <span class="par-tag" style="${m.tagStyle}"><span class="ico">${m.icon}</span>${m.tag}</span>
+          <span class="par-title">Párrafo ${m.num} — ${escHtml(m.name)}</span>
+        </div>
+      </div>
+      <div class="par-body">
+        ${rows}
+        <button type="button" class="btn-add-var comp-add" onclick="addSrc(${m.num})">＋ Agregar fuente</button>
+      </div>`;
+    cont.appendChild(card);
+  });
+}
+
+function addSrc(n) {
+  compData[n].push(emptySrc());
+  renderCompiler();
+  const i = compData[n].length - 1;
+  const el = $(`ct_${n}_${i}`);
+  if (el) el.focus();
+}
+
+function removeSrc(n, i) {
+  compData[n].splice(i, 1);
+  if (!compData[n].length) compData[n].push(emptySrc());
+  renderCompiler();
+}
+
+function buildReport() {
+  const v = gv('v1');
+  const lines = ['AntoMatic — Compilador DP (Descripción del Problema)'];
+  if (v) lines.push('Variable principal: ' + v);
+  lines.push('Fecha: ' + new Date().toLocaleDateString('es-PE'), '');
+  let count = 0;
+  COMP_META.forEach(m => {
+    let k = 0;
+    compData[m.num].forEach(s => {
+      const t = s.t.trim(), u = s.u.trim();
+      if (!t && !u) return;
+      k++; count++;
+      lines.push('Párrafo ' + m.num + ' - Fuente ' + k, 'Título: ' + t, 'URL o DOI: ' + u, '');
+    });
+  });
+  return { text: lines.join('\r\n'), count };
+}
+
+function downloadReport() {
+  const { text, count } = buildReport();
+  if (!count) { $('compHint').style.display = 'block'; return; }
+  $('compHint').style.display = 'none';
+  const slug = (gv('v1') || 'reporte')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    .slice(0, 40) || 'reporte';
+  const fecha = new Date().toISOString().slice(0, 10);
+  /* BOM UTF-8 para que el Bloc de notas muestre bien las tildes */
+  const blob = new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `antomatic-compilador-dp-${slug}-${fecha}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function togglePar(n) {
@@ -933,6 +1136,7 @@ function updateCtxLabels() {
     : 'Área de contribución (inglés)';
 }
 updateOtrasStatus();
+renderCompiler();
 $('v1').addEventListener('input',   updateCtxLabels);
 $('v1en').addEventListener('input', updateCtxLabels);
 

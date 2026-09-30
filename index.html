@@ -448,7 +448,7 @@
   <div class="step-sep"></div>
   <div class="step-item" onclick="gotoStep(4)">
     <div class="step-dot" id="dot4">4</div>
-    <span class="step-label" id="lbl4">Compilador de Artículos Científicos</span>
+    <span class="step-label" id="lbl4">Colección de Artículos Científicos</span>
   </div>
 </div>
 
@@ -667,7 +667,7 @@
   <div id="step4" style="display:none;">
 
     <div class="results-header">
-      <h2>Compilador de Artículos Científicos</h2>
+      <h2>Colección de Artículos Científicos</h2>
       <div class="results-actions">
         <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
         <button class="btn-secondary" onclick="gotoStep(3)">← Compilador DP</button>
@@ -1322,7 +1322,7 @@ function removeArt(i) {
 
 function downloadArtReport() {
   const v = gv('v1');
-  const lines = ['AntoMatic — Compilador de Artículos Científicos'];
+  const lines = ['AntoMatic — Colección de Artículos Científicos'];
   if (v) lines.push('Variable principal: ' + v);
   lines.push('Fecha: ' + new Date().toLocaleDateString('es-PE'), '');
   let k = 0;

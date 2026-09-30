@@ -889,6 +889,13 @@ function generate() {
   const ctxEn = gv('ctx_en') || 'the organizational context';
   const org   = gv('org')    || 'la organización';
 
+  /* Párrafo 5 sincronizado con "Otras variables" del paso 1 */
+  const tipo   = getTipo();
+  const varP5  = tipo === 'med'
+    ? (gv('med_es') || 'la variable mediadora')
+    : (gv('ind_es') || 'las variables independientes');
+  const verboP5 = tipo === 'med' ? 'podría estar' : 'podrían estar';
+
   /* ── 5 PÁRRAFOS ──────────────────────────────────────── */
   /* colors: header (fondo más oscuro que la etiqueta), body (tinte muy suave),
              border y accent (borde izquierdo) */
@@ -977,7 +984,7 @@ function generate() {
       title: `Párrafo 5 — Situación local en ${org}`,
       desc: null,
       manual: true,
-      hint: `Describe de forma general —sin ser concluyente— cómo <em>${escHtml(otras)}</em> podrían estar incidiendo en <strong>${escHtml(v1)}</strong> en <em>${escHtml(org)}</em>. Puede ser una situación negativa o positiva que justifique la investigación. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda.`
+      hint: `Describe de forma general —sin ser concluyente— cómo <em>${escHtml(varP5)}</em> ${verboP5} incidiendo en <strong>${escHtml(v1)}</strong> en <em>${escHtml(org)}</em>. Puede ser una situación negativa o positiva que justifique la investigación dentro de <em>${escHtml(ctxEs)}</em>. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda.`
     }
   ];
 

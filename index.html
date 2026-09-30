@@ -676,8 +676,8 @@
     <div class="session-msg" id="sessionMsg4"></div>
 
     <p class="comp-intro">
-      Registra los artículos científicos de tu investigación: el <strong>título</strong> y el <strong>DOI</strong> de cada uno.
-      El <strong>Artículo 1</strong> es el artículo <strong>estrella</strong> (el más importante o base de tu trabajo).
+      Registra aproximadamente <strong>15 artículos científicos</strong> afines a tu investigación: el <strong>título</strong> y el <strong>DOI</strong> de cada uno (mejor de <strong>ScienceDirect</strong>).
+      El <strong>Artículo 1</strong> es el artículo <strong>Estrella</strong> (el más importante o base de tu trabajo).
       Usa <strong>＋ Agregar artículo</strong> para añadir más y la <strong>✕</strong> para borrar uno.
     </p>
 
@@ -1278,7 +1278,7 @@ function renderArticles() {
     <div class="art-card${star ? ' star' : ''}">
       <div class="art-head">
         <span class="art-label">Artículo ${i + 1}${star ? '<span class="art-star">⭐ Estrella</span>' : ''}</span>
-        <button type="button" class="btn-del-art" title="Borrar este artículo" onclick="removeArt(${i})">🗑 Borrar</button>
+        <button type="button" class="btn-del-art" title="Borrar este artículo" onclick="removeArt(${i})" aria-label="Borrar este artículo">✕</button>
       </div>
       <div class="form-field">
         <label for="at_${i}">Título del artículo ${i + 1}${star ? ' (Estrella)' : ''}</label>

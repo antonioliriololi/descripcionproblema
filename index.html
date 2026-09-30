@@ -792,16 +792,14 @@ function collectSession() {
 
 function saveSession() {
   const data = collectSession();
-  const slug = (data.principal.es || 'sesion')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-    .slice(0, 40) || 'sesion';
-  const fecha = new Date().toISOString().slice(0, 10);
+  /* Nombre: AntoMaticDP-AAAA-MM-DD.json (fecha local) */
+  const d0 = new Date();
+  const fecha = d0.getFullYear() + '-' + String(d0.getMonth() + 1).padStart(2, '0') + '-' + String(d0.getDate()).padStart(2, '0');
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `antomatic-${slug}-${fecha}.json`;
+  a.download = `AntoMaticDP-${fecha}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -984,7 +982,7 @@ function generate() {
       title: `Párrafo 5 — Situación local en ${org}`,
       desc: null,
       manual: true,
-      hint: `Describe de forma general —sin ser concluyente— cómo <em>${escHtml(varP5)}</em> ${verboP5} incidiendo en <strong>${escHtml(v1)}</strong> en <em>${escHtml(org)}</em>. Puede ser una situación negativa o positiva que justifique la investigación dentro de <em>${escHtml(ctxEs)}</em>. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda.`
+      hint: `Describe de forma general —sin ser concluyente— cómo <em>${escHtml(varP5)}</em> ${verboP5} incidiendo en <strong>${escHtml(v1)}</strong> en <em>${escHtml(org)}</em>. Puede ser una situación negativa o positiva que justifique la investigación dentro de <em>${escHtml(ctxEs)}</em>. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda. A este párrafo debe sumarse la síntesis de la o las entrevistas que hayas logrado y agregado en la pestaña <strong>“Compilador DP”</strong>.`
     }
   ];
 

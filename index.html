@@ -380,6 +380,23 @@
   .comp-footer { margin-top: 1.25rem; }
   .comp-footer .hint-error { margin-top: 0; margin-bottom: 8px; }
 
+  /* ── ARTÍCULOS CIENTÍFICOS ───────────────────────────── */
+  .art-card {
+    border: 1px solid #c9dcfb; border-left: 5px solid #1a56c4; background: #f5f8ff;
+    padding: 12px 14px 14px; margin-bottom: 10px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .art-card.star { border-color: #efd070; border-left-color: #c58a00; background: #fffcf0; }
+  .art-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .art-label { font-size: 13px; font-weight: 700; color: var(--black); }
+  .art-star { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    background: #fbe9a6; color: #9a6800; border: 1px solid #efd070; padding: 1px 7px; text-transform: uppercase; }
+  .btn-del-art {
+    background: var(--white); border: 1px solid var(--gray-light); color: var(--gray-dark);
+    font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; padding: 4px 10px; cursor: pointer;
+  }
+  .btn-del-art:hover { border-color: #c0392b; color: #c0392b; }
+
   /* ── FOOTER ──────────────────────────────────────────── */
   footer {
     border-top: 1px solid var(--gray-pale);
@@ -419,6 +436,11 @@
   <div class="step-item" onclick="gotoStep(3)">
     <div class="step-dot" id="dot3">3</div>
     <span class="step-label" id="lbl3">Compilador DP</span>
+  </div>
+  <div class="step-sep"></div>
+  <div class="step-item" onclick="gotoStep(4)">
+    <div class="step-dot" id="dot4">4</div>
+    <span class="step-label" id="lbl4">Compilador de Artículos Científicos</span>
   </div>
 </div>
 
@@ -611,6 +633,7 @@
       <div class="results-actions">
         <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
         <button class="btn-secondary" onclick="gotoStep(2)">← Ecuaciones</button>
+        <button class="btn-secondary" onclick="gotoStep(4)">Artículos científicos →</button>
       </div>
     </div>
 
@@ -630,6 +653,37 @@
     </div>
 
   </div><!-- /step3 -->
+
+
+  <!-- ═══════════════════════ PASO 4: COMPILADOR DE ARTÍCULOS ═══════════════════════ -->
+  <div id="step4" style="display:none;">
+
+    <div class="results-header">
+      <h2>Compilador de Artículos Científicos</h2>
+      <div class="results-actions">
+        <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
+        <button class="btn-secondary" onclick="gotoStep(3)">← Compilador DP</button>
+      </div>
+    </div>
+
+    <div class="session-msg" id="sessionMsg4"></div>
+
+    <p class="comp-intro">
+      Registra los artículos científicos de tu investigación: el <strong>título</strong> y el <strong>DOI</strong> de cada uno.
+      El <strong>Artículo 1</strong> es el artículo <strong>estrella</strong> (el más importante o base de tu trabajo).
+      Usa <strong>＋ Agregar artículo</strong> para añadir más y la <strong>✕</strong> para borrar uno.
+    </p>
+
+    <div id="artContainer"></div>
+
+    <button type="button" class="btn-add-var" onclick="addArt()">＋ Agregar artículo</button>
+
+    <div class="comp-footer">
+      <p class="hint-error" id="artHint">⚠ Registra al menos un artículo (título o DOI) para generar el reporte.</p>
+      <button class="btn-primary" style="margin-top:0" onclick="downloadArtReport()">⬇ Generar reporte .txt</button>
+    </div>
+
+  </div><!-- /step4 -->
 
 </main>
 
@@ -695,10 +749,10 @@ function getOtrasEs() {
 const SESSION_APP = 'AntoMatic-Ecuaciones-Problema';
 
 function showSessionMsg(text, ok) {
-  ['sessionMsg', 'sessionMsg2', 'sessionMsg3'].forEach(id => {
+  ['sessionMsg', 'sessionMsg2', 'sessionMsg3', 'sessionMsg4'].forEach(id => {
     const m = $(id);
     if (!m) return;
-    const stepEl = m.closest('#step3') || m.closest('#step2') || m.closest('#step1');
+    const stepEl = m.closest('#step4') || m.closest('#step3') || m.closest('#step2') || m.closest('#step1');
     const visible = stepEl && stepEl.style.display !== 'none';
     if (!visible) return;
     m.textContent = text;
@@ -722,7 +776,8 @@ function collectSession() {
     independientes: { es: gv('ind_es'), en: gv('ind_en') },
     organizacion: gv('org'),
     contribucion: { es: gv('ctx_es'), en: gv('ctx_en') },
-    compilador: compData
+    compilador: compData,
+    articulos: artData
   };
 }
 
@@ -786,6 +841,13 @@ function loadSession(input) {
             : [emptySrc()];
         });
         renderCompiler();
+      }
+
+      if (Array.isArray(d.articulos)) {
+        artData.length = 0;
+        d.articulos.forEach(a => artData.push({ t: String((a && a.t) || ''), d: String((a && a.d) || '') }));
+        if (!artData.length) artData.push(emptyArt());
+        renderArticles();
       }
 
       clearHint();
@@ -996,7 +1058,7 @@ function generate() {
 
 /* ══════════════════ NAVEGACIÓN ENTRE PESTAÑAS ══════════════════ */
 function showStep(n) {
-  [1, 2, 3].forEach(i => {
+  [1, 2, 3, 4].forEach(i => {
     $('step' + i).style.display = (i === n) ? 'block' : 'none';
     $('dot' + i).className = 'step-dot' + (i === n ? ' active' : (i < n ? ' done' : ''));
     $('lbl' + i).className = 'step-label' + (i === n ? ' active' : '');
@@ -1134,6 +1196,74 @@ function downloadReport() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+/* ══════════════════ COMPILADOR DE ARTÍCULOS CIENTÍFICOS ══════════════════ */
+const emptyArt = () => ({ t: '', d: '' });
+const artData = [emptyArt()];
+
+function renderArticles() {
+  const cont = $('artContainer');
+  cont.innerHTML = artData.map((a, i) => {
+    const star = i === 0;
+    return `
+    <div class="art-card${star ? ' star' : ''}">
+      <div class="art-head">
+        <span class="art-label">Título del artículo ${i + 1}${star ? '<span class="art-star">⭐ Estrella</span>' : ''}</span>
+        <button type="button" class="btn-del-art" title="Borrar este artículo" onclick="removeArt(${i})">🗑 Borrar</button>
+      </div>
+      <div class="form-field">
+        <label for="at_${i}">Título del artículo ${i + 1}${star ? ' (Estrella)' : ''}</label>
+        <input type="text" id="at_${i}" value="${escHtml(a.t)}" placeholder="Título completo del artículo científico"
+               oninput="artData[${i}].t=this.value">
+      </div>
+      <div class="form-field">
+        <label for="ad_${i}">DOI</label>
+        <input type="text" id="ad_${i}" value="${escHtml(a.d)}" placeholder="10.xxxx/xxxxx o https://doi.org/10.xxxx/xxxxx"
+               oninput="artData[${i}].d=this.value">
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addArt() {
+  artData.push(emptyArt());
+  renderArticles();
+  const el = $('at_' + (artData.length - 1));
+  if (el) el.focus();
+}
+
+function removeArt(i) {
+  const a = artData[i];
+  if ((a.t.trim() || a.d.trim()) && !confirm('¿Borrar el artículo ' + (i + 1) + '?')) return;
+  artData.splice(i, 1);
+  if (!artData.length) artData.push(emptyArt());
+  renderArticles();
+}
+
+function downloadArtReport() {
+  const v = gv('v1');
+  const lines = ['AntoMatic — Compilador de Artículos Científicos'];
+  if (v) lines.push('Variable principal: ' + v);
+  lines.push('Fecha: ' + new Date().toLocaleDateString('es-PE'), '');
+  let k = 0;
+  artData.forEach((a, i) => {
+    const t = a.t.trim(), d = a.d.trim();
+    if (!t && !d) return;
+    k++;
+    lines.push('Artículo ' + k + (k === 1 ? ' (Estrella)' : ''), 'Título: ' + t, 'DOI: ' + d, '');
+  });
+  if (!k) { $('artHint').style.display = 'block'; return; }
+  $('artHint').style.display = 'none';
+  const slug = (v || 'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'reporte';
+  const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const el = document.createElement('a');
+  el.href = url;
+  el.download = `antomatic-articulos-${slug}-${new Date().toISOString().slice(0, 10)}.txt`;
+  document.body.appendChild(el); el.click(); el.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function togglePar(n) {
   const bd = $('bd' + n);
   const ch = $('ch' + n);
@@ -1170,6 +1300,7 @@ function updateCtxLabels() {
 }
 updateOtrasStatus();
 renderCompiler();
+renderArticles();
 $('v1').addEventListener('input',   updateCtxLabels);
 $('v1en').addEventListener('input', updateCtxLabels);
 

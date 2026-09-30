@@ -384,6 +384,7 @@
     background: #f3e8fd; color: #7e22ce; border: 1px solid #d8b4fd; padding: 1px 7px; }
   textarea.tall { min-height: 170px; }
   .wc { font-size: 11px; color: var(--gray-mid); }
+  .lbl-hint { font-weight: 400; color: var(--gray-mid); }
   .comp-footer { margin-top: 1.25rem; }
   .comp-footer .hint-error { margin-top: 0; margin-bottom: 8px; }
 
@@ -676,9 +677,10 @@
     <div class="session-msg" id="sessionMsg4"></div>
 
     <p class="comp-intro">
-      Registra aproximadamente <strong>15 artículos científicos</strong> afines a tu investigación: el <strong>título</strong> y el <strong>DOI</strong> de cada uno (mejor de <strong>ScienceDirect</strong>).
+      Registra aproximadamente <strong>15 artículos científicos</strong> afines a tu investigación: el <strong>título</strong> y el <strong>DOI</strong> de cada uno (mejor de <strong>ScienceDirect</strong> u otro que recomiende <strong>Antonio Lirio</strong>).
       El <strong>Artículo 1</strong> es el artículo <strong>Estrella</strong> (el más importante o base de tu trabajo).
       Usa <strong>＋ Agregar artículo</strong> para añadir más y la <strong>✕</strong> para borrar uno.
+      Luego deberás <strong>descargar cada artículo</strong> para su tratamiento con tu asesor.
     </p>
 
     <div id="artContainer"></div>
@@ -1155,7 +1157,9 @@ function srcHtml(m, s, i, list) {
   } else {
     fields = fieldHtml(idT, 'Título', s.t, 'Título del documento o de la página', onT)
            + fieldHtml(idU, 'URL o DOI', s.u, 'https://... o 10.xxxx/xxxxx', onU)
-           + fieldHtml(idC, 'Contenido', s.c, 'Pega aquí el texto de la fuente (aprox. 400 a 600 palabras)...', onC, { area:true, tall:true, extra:counter });
+           + (n === 1
+               ? fieldHtml(idC, 'Contenido o definición <span class="lbl-hint">(Puedes usar tu Artículo Estrella como insumo)</span>', s.c, 'Pega aquí el contenido o la definición del concepto (aprox. 400 a 600 palabras)...', onC, { area:true, tall:true, extra:counter })
+               : fieldHtml(idC, 'Contenido', s.c, 'Pega aquí el texto de la fuente (aprox. 400 a 600 palabras)...', onC, { area:true, tall:true, extra:counter }));
   }
   const canRemove = n === 5 || list.length > 1;
   return `
@@ -1238,7 +1242,7 @@ function buildReport() {
       } else if (m.num === 5) {
         lines.push(head, 'Título: ' + t, 'URL: ' + u, 'Contenido:', crlf(c), '');
       } else {
-        lines.push(head, 'Título: ' + t, 'URL o DOI: ' + u, 'Contenido:', crlf(c), '');
+        lines.push(head, 'Título: ' + t, 'URL o DOI: ' + u, (m.num === 1 ? 'Contenido o definición:' : 'Contenido:'), crlf(c), '');
       }
     });
   });

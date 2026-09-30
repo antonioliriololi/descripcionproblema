@@ -174,6 +174,18 @@
   .var-group-title { font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
   .var-group-title .opt { font-weight: 400; color: var(--gray-mid); }
 
+  .radio-group { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+  .radio-opt { display: flex; align-items: center; gap: 8px; font-size: 13px !important; font-weight: 400 !important; color: var(--black) !important; cursor: pointer; }
+  .radio-opt input[type="radio"] { width: 16px; height: 16px; accent-color: var(--black); cursor: pointer; margin: 0; }
+  textarea {
+    width: 100%; min-height: 90px; resize: vertical;
+    border: 1px solid var(--gray-light); padding: 7px 10px;
+    font-family: Arial, sans-serif; font-size: 13px; color: var(--black);
+    background: var(--white); outline: none; line-height: 1.5;
+  }
+  textarea:focus { border-color: var(--black); }
+  textarea::placeholder { color: var(--gray-light); }
+
   select {
     width: 100%; border: 1px solid var(--gray-light); padding: 7px 10px;
     font-family: Arial, sans-serif; font-size: 13px; color: var(--black);
@@ -442,7 +454,7 @@
             <input type="text" id="v1" placeholder="Ej. el rendimiento laboral" oninput="clearHint()">
           </div>
           <div class="form-field">
-            <label for="s1">Sinónimo en español</label>
+            <label for="s1">Sinónimo en español <span style="font-weight:400;color:var(--gray-mid)">(opcional)</span></label>
             <input type="text" id="s1" placeholder="Ej. el rendimiento de trabajo">
           </div>
         </div>
@@ -457,7 +469,7 @@
             <input type="text" id="v1en" placeholder="ej: job performance" oninput="clearHint()">
           </div>
           <div class="form-field">
-            <label for="s1en">Sinónimo en inglés</label>
+            <label for="s1en">Sinónimo en inglés <span style="font-weight:400;color:var(--gray-mid)">(opcional)</span></label>
             <input type="text" id="s1en" placeholder="ej: work performance">
           </div>
         </div>
@@ -469,11 +481,11 @@
       <div class="form-section-title">Otras variables (mediadora o independientes)</div>
 
       <div class="form-field" style="margin-bottom:12px;">
-        <label for="tipoOtras">Elige el tipo de variable a registrar</label>
-        <select id="tipoOtras" onchange="toggleTipoOtras()">
-          <option value="ind">Principales variables independientes</option>
-          <option value="med">Nombre de la variable mediadora (si existe)</option>
-        </select>
+        <label id="lblTipoOtras">Elige el tipo de variable a registrar</label>
+        <div class="radio-group" role="radiogroup" aria-labelledby="lblTipoOtras">
+          <label class="radio-opt"><input type="radio" name="tipoOtras" value="ind" checked onchange="toggleTipoOtras()"> Principales variables independientes</label>
+          <label class="radio-opt"><input type="radio" name="tipoOtras" value="med" onchange="toggleTipoOtras()"> Nombre de la variable mediadora</label>
+        </div>
       </div>
 
       <div class="var-group" id="grp_ind">
@@ -644,8 +656,17 @@ const gv  = id => $(id).value.trim();
 function clearHint() { $('formHint').style.display = 'none'; }
 
 /* ══════════════════ OTRAS VARIABLES ══════════════════ */
+function getTipo() {
+  const r = document.querySelector('input[name="tipoOtras"]:checked');
+  return r ? r.value : 'ind';
+}
+function setTipo(v) {
+  const r = document.querySelector('input[name="tipoOtras"][value="' + (v === 'med' ? 'med' : 'ind') + '"]');
+  if (r) r.checked = true;
+}
+
 function toggleTipoOtras() {
-  const t = $('tipoOtras').value;
+  const t = getTipo();
   $('grp_ind').style.display = t === 'ind' ? 'block' : 'none';
   $('grp_med').style.display = t === 'med' ? 'block' : 'none';
   updateOtrasStatus();
@@ -657,7 +678,7 @@ function updateOtrasStatus() {
   const med = gv('med_es') || gv('med_en');
   const mk = (n, ok) => n + ': ' + (ok ? '<span class="ok">✓ registrada</span>' : 'sin registrar');
   $('otrasStatus').innerHTML = mk('Independientes', ind) + ' &nbsp;·&nbsp; ' + mk('Mediadora', med) +
-    '<br>Puedes alternar entre las dos opciones en la lista; se conservan ambas.';
+    '<br>Puedes alternar entre las dos opciones; se conservan ambas.';
 }
 
 
@@ -696,7 +717,7 @@ function collectSession() {
       es: gv('v1'), sinonimoEs: gv('s1'),
       en: gv('v1en'), sinonimoEn: gv('s1en')
     },
-    tipoOtras: $('tipoOtras').value,
+    tipoOtras: getTipo(),
     mediadora: { es: gv('med_es'), en: gv('med_en') },
     independientes: { es: gv('ind_es'), en: gv('ind_en') },
     organizacion: gv('org'),
@@ -753,7 +774,7 @@ function loadSession(input) {
         $('ind_es').value = old.map(o => o.es).filter(Boolean).join(', ');
         $('ind_en').value = old.map(o => o.en).filter(Boolean).join(', ');
       }
-      $('tipoOtras').value = (d.tipoOtras === 'med') ? 'med' : 'ind';
+      setTipo(d.tipoOtras);
       toggleTipoOtras();
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
 
@@ -788,8 +809,10 @@ function generate() {
   const v1en  = gv('v1en');
   if (!v1 || !v1en) { $('formHint').style.display = 'block'; return; }
 
-  const s1    = gv('s1')   || v1;
-  const s1en  = gv('s1en') || v1en;
+  /* Sinónimos opcionales: si están vacíos, la ecuación queda más simple */
+  const s1    = gv('s1');
+  const s1en  = gv('s1en');
+  const or    = (a, b) => (b && b.toLowerCase() !== a.toLowerCase()) ? Q(a) + ' OR ' + Q(b) : Q(a);
   const otras = getOtrasEs();
   const ctxEs = gv('ctx_es') || 'el contexto organizacional';
   const ctxEn = gv('ctx_en') || 'the organizational context';
@@ -808,10 +831,10 @@ function generate() {
       title: `Párrafo 1 — Definición teórica de ${Q(v1)}`,
       desc: `Define el concepto de ${Q(v1)} con base en literatura académica. Incluye el enlace de la fuente al final del párrafo.`,
       sources: [
-        { name:'Google Scholar', eq:`(define OR concept) AND (${Q(v1)} OR ${Q(s1)}) OR (${Q(v1en)} OR ${Q(s1en)})`, link:SC },
+        { name:'Google Scholar', eq:`(define OR concept) AND (${or(v1, s1)}) OR (${or(v1en, s1en)})`, link:SC },
         { name:'ScienceDirect Topics', eq:v1en, link:SDT,
           note:'Busca el concepto como topic académico en ScienceDirect. Sin comillas para mayor amplitud.' },
-        { name:'ScienceDirect',  eq:`define ${Q(v1en)} OR ${Q(s1en)}`, link:SD },
+        { name:'ScienceDirect',  eq:`define ${or(v1en, s1en)}`, link:SD },
         { name:'SpringerLink',   eq:`${v1en} definition`, link:SP,
           note:'Busca la definición del concepto en libros y artículos de SpringerLink.' },
         { name:'Emerald Insight', eq:`${v1en} definition`, link:EM,
@@ -830,15 +853,15 @@ function generate() {
       sources: [
         { name:'América Economía', eq:v1, dualAE:true,
           note:'Búsqueda restringida solo a la variable principal en español.' },
-        { name:'The New York Times', eq:`site:nytimes.com/ ${Q(v1en)} OR ${Q(s1en)}`, link:GG,
+        { name:'The New York Times', eq:`site:nytimes.com/ ${or(v1en, s1en)}`, link:GG,
           note:'Presiona ESC antes de que cargue la página para evitar el paywall.' },
-        { name:'BBC Mundo',  eq:`site:bbc.com/mundo/ ${Q(v1)} OR ${Q(s1)}`, link:GG },
+        { name:'BBC Mundo',  eq:`site:bbc.com/mundo/ ${or(v1, s1)}`, link:GG },
         { name:'Gallup',     eq:`site:gallup.com/workplace/ ${v1en} after:2021`, link:GG },
-        { name:'OIT / ILO',  eq:`site:ilo.org/ ${Q(v1en)} OR ${Q(s1en)} after:2020`, link:GG,
+        { name:'OIT / ILO',  eq:`site:ilo.org/ ${or(v1en, s1en)} after:2020`, link:GG,
           note:'Recomendado si tu tema es de Recursos Humanos.' },
-        { name:'Deutsche Welle', eq:`site:dw.com/ ${Q(v1)} OR ${Q(s1)}`, link:GG },
-        { name:'Banco Mundial',  eq:`site:worldbank.org/ ${Q(v1en)} OR ${Q(s1en)} after:2020`, link:GG },
-        { name:'CEPAL', eq:`site:cepal.org/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG },
+        { name:'Deutsche Welle', eq:`site:dw.com/ ${or(v1, s1)}`, link:GG },
+        { name:'Banco Mundial',  eq:`site:worldbank.org/ ${or(v1en, s1en)} after:2020`, link:GG },
+        { name:'CEPAL', eq:`site:cepal.org/ ${or(v1, s1)} after:2020`, link:GG },
       ]
     },
     {
@@ -850,14 +873,14 @@ function generate() {
       title: `Párrafo 3 — Situación nacional (Perú) sobre ${Q(v1)}`,
       desc: `Explica qué está ocurriendo en el Perú respecto a ${Q(v1)}. Incluye el enlace de la fuente al final del párrafo.`,
       sources: [
-        { name:'Actualidad Empresarial', eq:`site:actualidadempresarial.pe/ ${Q(v1)} OR ${Q(s1)}`, link:GG },
-        { name:'El Peruano',      eq:`site:elperuano.pe/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG },
+        { name:'Actualidad Empresarial', eq:`site:actualidadempresarial.pe/ ${or(v1, s1)}`, link:GG },
+        { name:'El Peruano',      eq:`site:elperuano.pe/ ${or(v1, s1)} after:2020`, link:GG },
         { name:'Mundo Empresarial', eq:`site:mundoempresarial.pe/ ${v1} after:2020`, link:GG },
-        { name:'Mercado Negro',   eq:`site:mercadonegro.pe/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG,
+        { name:'Mercado Negro',   eq:`site:mercadonegro.pe/ ${or(v1, s1)} after:2020`, link:GG,
           note:'Usar si tu tema es de Marketing.' },
-        { name:'Peru Retail',     eq:`site:peru-retail.com/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG,
+        { name:'Peru Retail',     eq:`site:peru-retail.com/ ${or(v1, s1)} after:2020`, link:GG,
           note:'Usar si tu tema es de Marketing o Comercio Electrónico.' },
-        { name:'Gestión',         eq:`site:gestion.pe/ ${Q(v1)} OR ${Q(s1)} after:2020`, link:GG },
+        { name:'Gestión',         eq:`site:gestion.pe/ ${or(v1, s1)} after:2020`, link:GG },
       ]
     },
     {
@@ -869,7 +892,7 @@ function generate() {
       title: `Párrafo 4 — Contribución de ${Q(v1)} en ${ctxEs}`,
       desc: `Describe la importancia o contribución de ${Q(v1)} en ${ctxEs}. Elige una sola fuente e incluye el enlace o DOI al final.`,
       sources: [
-        { name:'Google Scholar', eq:`(${Q(v1en)} OR ${Q(s1en)}) AND (${Q(ctxEn)}) AND (contribution OR impact OR role)`, link:SC },
+        { name:'Google Scholar', eq:`(${or(v1en, s1en)}) AND (${Q(ctxEn)}) AND (contribution OR impact OR role)`, link:SC },
         { name:'IA en inglés — ChatGPT / Perplexity', eq:`What is the contribution of ${Q(v1en)} in ${ctxEn}? Give me an author with DOI`, isAI:true },
         { name:'IA en español — ChatGPT / Perplexity', eq:`¿Cuál es la contribución de ${Q(v1)} en ${ctxEs}? Cita un autor que exista con DOI`, isAI:true },
       ]
@@ -1003,6 +1026,14 @@ const COMP_META = [
   { num:4, tag:'Contribución', icon:'🤝',      tagStyle:'background:#fef7e0;color:#9a6800;border:1px solid #fce09a;', colors:{ header:'#fbe9a6', body:'#fffcf0', border:'#efd070', accent:'#c58a00' }, name:'Contribución' },
   { num:5, tag:'Local',        icon:'📍',      tagStyle:'background:#f3e8fd;color:#7e22ce;border:1px solid #d8b4fd;', colors:{ header:'#e4cdfa', body:'#faf5ff', border:'#c79bf3', accent:'#7e22ce' }, name:'Situación local' }
 ];
+/* Párrafo 5 (situación local) se documenta con una entrevista, no con URL/DOI */
+const COMP_FIELDS = {
+  default: { t:'Título',  tph:'Título del documento o de la página',
+             u:'URL o DOI', uph:'https://... o 10.xxxx/xxxxx', area:false, rep:'URL o DOI' },
+  5:       { t:'Título',  tph:'Ej. Entrevista con el Jefe de RRHH de la Municipalidad de Independencia',
+             u:'Transcripción de la entrevista', uph:'Pega aquí la transcripción de la entrevista...', area:true, rep:'Transcripción de la entrevista' }
+};
+const fieldsFor = n => COMP_FIELDS[n] || COMP_FIELDS.default;
 const emptySrc = () => ({ t: '', u: '' });
 const compData = { 1:[emptySrc()], 2:[emptySrc()], 3:[emptySrc()], 4:[emptySrc()], 5:[emptySrc()] };
 
@@ -1012,6 +1043,7 @@ function renderCompiler() {
   COMP_META.forEach(m => {
     const list = compData[m.num];
     const c = m.colors;
+    const F = fieldsFor(m.num);
     const rows = list.map((s, i) => `
       <div class="comp-src">
         <div class="comp-src-head">
@@ -1019,14 +1051,15 @@ function renderCompiler() {
           ${list.length > 1 ? `<button type="button" class="btn-remove-src" title="Quitar esta fuente" onclick="removeSrc(${m.num},${i})">✕</button>` : ''}
         </div>
         <div class="form-field">
-          <label for="ct_${m.num}_${i}">Título</label>
-          <input type="text" id="ct_${m.num}_${i}" value="${escHtml(s.t)}" placeholder="Título del documento o de la página"
+          <label for="ct_${m.num}_${i}">${F.t}</label>
+          <input type="text" id="ct_${m.num}_${i}" value="${escHtml(s.t)}" placeholder="${escHtml(F.tph)}"
                  oninput="compData[${m.num}][${i}].t=this.value">
         </div>
         <div class="form-field">
-          <label for="cu_${m.num}_${i}">URL o DOI</label>
-          <input type="text" id="cu_${m.num}_${i}" value="${escHtml(s.u)}" placeholder="https://... o 10.xxxx/xxxxx"
-                 oninput="compData[${m.num}][${i}].u=this.value">
+          <label for="cu_${m.num}_${i}">${F.u}</label>
+          ${F.area
+            ? `<textarea id="cu_${m.num}_${i}" placeholder="${escHtml(F.uph)}" oninput="compData[${m.num}][${i}].u=this.value">${escHtml(s.u)}</textarea>`
+            : `<input type="text" id="cu_${m.num}_${i}" value="${escHtml(s.u)}" placeholder="${escHtml(F.uph)}" oninput="compData[${m.num}][${i}].u=this.value">`}
         </div>
       </div>`).join('');
 
@@ -1074,7 +1107,7 @@ function buildReport() {
       const t = s.t.trim(), u = s.u.trim();
       if (!t && !u) return;
       k++; count++;
-      lines.push('Párrafo ' + m.num + ' - Fuente ' + k, 'Título: ' + t, 'URL o DOI: ' + u, '');
+      lines.push('Párrafo ' + m.num + ' - Fuente ' + k, 'Título: ' + t, fieldsFor(m.num).rep + ': ' + u.replace(/\r?\n/g, '\r\n'), '');
     });
   });
   return { text: lines.join('\r\n'), count };

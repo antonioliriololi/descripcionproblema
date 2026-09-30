@@ -377,6 +377,13 @@
   }
   .btn-remove-src:hover { border-color: #c0392b; color: #c0392b; }
   .comp-add { margin-top: 2px; }
+  .comp-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .comp-btns .btn-add-var { margin-top: 2px; }
+  .comp-empty { font-size: 12px; color: var(--gray-mid); font-style: italic; margin-bottom: 6px; }
+  .kind-badge { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 700; letter-spacing: .04em;
+    background: #f3e8fd; color: #7e22ce; border: 1px solid #d8b4fd; padding: 1px 7px; }
+  textarea.tall { min-height: 170px; }
+  .wc { font-size: 11px; color: var(--gray-mid); }
   .comp-footer { margin-top: 1.25rem; }
   .comp-footer .hint-error { margin-top: 0; margin-bottom: 8px; }
 
@@ -641,8 +648,8 @@
 
     <p class="comp-intro">
       Registra aquí las fuentes que elegiste para cada párrafo de la Descripción del Problema:
-      el <strong>título</strong> y la <strong>URL o DOI</strong>. Usa <strong>+ Agregar fuente</strong>
-      si un párrafo tiene más de una. Al final descarga el reporte en .txt.
+      el <strong>título</strong>, la <strong>URL o DOI</strong> y el <strong>contenido</strong> (texto pegado de unas 400 a 600 palabras).
+      Usa <strong>＋ Agregar fuente</strong> si un párrafo tiene más de una. En el Párrafo 5 puedes agregar fuentes de <strong>entrevista</strong> o de <strong>noticia local o regional</strong>. Al final descarga el reporte en .txt.
     </p>
 
     <div id="compContainer"></div>
@@ -837,8 +844,8 @@ function loadSession(input) {
         [1,2,3,4,5].forEach(n => {
           const arr = Array.isArray(d.compilador[n]) ? d.compilador[n] : [];
           compData[n] = arr.length
-            ? arr.map(s => ({ t: String((s && s.t) || ''), u: String((s && s.u) || '') }))
-            : [emptySrc()];
+            ? arr.map(s => normalizeSrc(n, s))
+            : (n === 5 ? [] : [emptySrc()]);
         });
         renderCompiler();
       }
@@ -1088,16 +1095,78 @@ const COMP_META = [
   { num:4, tag:'Contribución', icon:'🤝',      tagStyle:'background:#fef7e0;color:#9a6800;border:1px solid #fce09a;', colors:{ header:'#fbe9a6', body:'#fffcf0', border:'#efd070', accent:'#c58a00' }, name:'Contribución' },
   { num:5, tag:'Local',        icon:'📍',      tagStyle:'background:#f3e8fd;color:#7e22ce;border:1px solid #d8b4fd;', colors:{ header:'#e4cdfa', body:'#faf5ff', border:'#c79bf3', accent:'#7e22ce' }, name:'Situación local' }
 ];
-/* Párrafo 5 (situación local) se documenta con una entrevista, no con URL/DOI */
-const COMP_FIELDS = {
-  default: { t:'Título',  tph:'Título del documento o de la página',
-             u:'URL o DOI', uph:'https://... o 10.xxxx/xxxxx', area:false, rep:'URL o DOI' },
-  5:       { t:'Título',  tph:'Ej. Entrevista con el Jefe de RRHH de la Municipalidad de Independencia',
-             u:'Transcripción de la entrevista', uph:'Pega aquí la transcripción de la entrevista...', area:true, rep:'Transcripción de la entrevista' }
-};
-const fieldsFor = n => COMP_FIELDS[n] || COMP_FIELDS.default;
-const emptySrc = () => ({ t: '', u: '' });
-const compData = { 1:[emptySrc()], 2:[emptySrc()], 3:[emptySrc()], 4:[emptySrc()], 5:[emptySrc()] };
+/* Cada fuente: { t: título, u: URL o DOI, c: contenido pegado }.
+   Párrafo 5 (situación local) tiene dos tipos de fuente, con k:
+   'ent' = entrevista (t título + c transcripción)
+   'not' = noticia local o regional (t título + u URL + c contenido) */
+const emptySrc = (k) => k ? { k, t: '', u: '', c: '' } : { t: '', u: '', c: '' };
+const compData = { 1:[emptySrc()], 2:[emptySrc()], 3:[emptySrc()], 4:[emptySrc()], 5:[] };
+const KIND_LABEL = { ent: 'Entrevista', not: 'Noticia local o regional' };
+
+/* Normaliza lo que viene de una sesión guardada (incluye sesiones antiguas) */
+function normalizeSrc(n, s) {
+  s = s || {};
+  const t = String(s.t || ''), u = String(s.u || ''), c = String(s.c || '');
+  if (n !== 5) return { t, u, c };
+  if (s.k === 'not') return { k: 'not', t, u, c };
+  if (s.k === 'ent') return { k: 'ent', t, u: '', c };
+  /* versión anterior: el párrafo 5 guardaba la transcripción en "u" */
+  return { k: 'ent', t, u: '', c: c || u };
+}
+
+function countWords(txt) { const m = String(txt).trim().match(/\S+/g); return m ? m.length : 0; }
+function wcHtml(txt) {
+  const w = countWords(txt);
+  const ok = w >= 400 && w <= 600;
+  return `<span style="color:${ok ? '#1a7a3c' : 'var(--gray-mid)'};font-weight:${ok ? 700 : 400}">${w} palabra${w === 1 ? '' : 's'}</span> · recomendado: 400 a 600`;
+}
+function onContent(n, i, el) {
+  compData[n][i].c = el.value;
+  const w = $(`wc_${n}_${i}`);
+  if (w) w.innerHTML = wcHtml(el.value);
+}
+
+function fieldHtml(id, label, val, ph, onin, opts) {
+  opts = opts || {};
+  const inner = opts.area
+    ? `<textarea id="${id}" class="${opts.tall ? 'tall' : ''}" placeholder="${escHtml(ph)}" oninput="${onin}">${escHtml(val)}</textarea>`
+    : `<input type="text" id="${id}" value="${escHtml(val)}" placeholder="${escHtml(ph)}" oninput="${onin}">`;
+  return `<div class="form-field"><label for="${id}">${label}</label>${inner}${opts.extra || ''}</div>`;
+}
+
+function srcHtml(m, s, i, list) {
+  const n = m.num, k = s.k;
+  const idT = `ct_${n}_${i}`, idU = `cu_${n}_${i}`, idC = `cc_${n}_${i}`;
+  const onT = `compData[${n}][${i}].t=this.value`;
+  const onU = `compData[${n}][${i}].u=this.value`;
+  const onC = `onContent(${n},${i},this)`;
+  const counter = `<span class="wc" id="wc_${n}_${i}">${wcHtml(s.c)}</span>`;
+  let label = `Párrafo ${n} - Fuente ${i + 1}`;
+  let fields = '';
+  if (n === 5 && k === 'ent') {
+    label += ` <span class="kind-badge">🎤 Entrevista</span>`;
+    fields = fieldHtml(idT, 'Título', s.t, 'Entrevista con Juan Pérez, Jefe de RRHH de la Municipalidad de Huaraz', onT)
+           + fieldHtml(idC, 'Transcripción de la entrevista', s.c, 'Pega aquí la transcripción de la entrevista...', onC, { area:true, tall:true, extra:counter });
+  } else if (n === 5) {
+    label += ` <span class="kind-badge">📰 Noticia local o regional</span>`;
+    fields = fieldHtml(idT, 'Título', s.t, 'Título de la noticia', onT)
+           + fieldHtml(idU, 'URL', s.u, 'https://...', onU)
+           + fieldHtml(idC, 'Contenido', s.c, 'Pega aquí el texto de la noticia (aprox. 400 a 600 palabras)...', onC, { area:true, tall:true, extra:counter });
+  } else {
+    fields = fieldHtml(idT, 'Título', s.t, 'Título del documento o de la página', onT)
+           + fieldHtml(idU, 'URL o DOI', s.u, 'https://... o 10.xxxx/xxxxx', onU)
+           + fieldHtml(idC, 'Contenido', s.c, 'Pega aquí el texto de la fuente (aprox. 400 a 600 palabras)...', onC, { area:true, tall:true, extra:counter });
+  }
+  const canRemove = n === 5 || list.length > 1;
+  return `
+      <div class="comp-src">
+        <div class="comp-src-head">
+          <span class="comp-src-label">${label}</span>
+          ${canRemove ? `<button type="button" class="btn-remove-src" title="Quitar esta fuente" onclick="removeSrc(${n},${i})">✕</button>` : ''}
+        </div>
+        ${fields}
+      </div>`;
+}
 
 function renderCompiler() {
   const cont = $('compContainer');
@@ -1105,25 +1174,16 @@ function renderCompiler() {
   COMP_META.forEach(m => {
     const list = compData[m.num];
     const c = m.colors;
-    const F = fieldsFor(m.num);
-    const rows = list.map((s, i) => `
-      <div class="comp-src">
-        <div class="comp-src-head">
-          <span class="comp-src-label">Párrafo ${m.num} - Fuente ${i + 1}</span>
-          ${list.length > 1 ? `<button type="button" class="btn-remove-src" title="Quitar esta fuente" onclick="removeSrc(${m.num},${i})">✕</button>` : ''}
-        </div>
-        <div class="form-field">
-          <label for="ct_${m.num}_${i}">${F.t}</label>
-          <input type="text" id="ct_${m.num}_${i}" value="${escHtml(s.t)}" placeholder="${escHtml(F.tph)}"
-                 oninput="compData[${m.num}][${i}].t=this.value">
-        </div>
-        <div class="form-field">
-          <label for="cu_${m.num}_${i}">${F.u}</label>
-          ${F.area
-            ? `<textarea id="cu_${m.num}_${i}" placeholder="${escHtml(F.uph)}" oninput="compData[${m.num}][${i}].u=this.value">${escHtml(s.u)}</textarea>`
-            : `<input type="text" id="cu_${m.num}_${i}" value="${escHtml(s.u)}" placeholder="${escHtml(F.uph)}" oninput="compData[${m.num}][${i}].u=this.value">`}
-        </div>
-      </div>`).join('');
+    let rows = list.map((s, i) => srcHtml(m, s, i, list)).join('');
+    let buttons;
+    if (m.num === 5) {
+      if (!list.length) rows = `<p class="comp-empty">Aún no hay fuentes en este párrafo. Agrega una entrevista o una noticia local o regional.</p>`;
+      buttons = `
+        <button type="button" class="btn-add-var comp-add" onclick="addSrc(5,'ent')">＋ Agregar fuente de entrevista</button>
+        <button type="button" class="btn-add-var comp-add" onclick="addSrc(5,'not')">＋ Agregar fuente de noticia local o regional</button>`;
+    } else {
+      buttons = `<button type="button" class="btn-add-var comp-add" onclick="addSrc(${m.num})">＋ Agregar fuente</button>`;
+    }
 
     const card = document.createElement('div');
     card.className = 'par-card comp-card';
@@ -1137,14 +1197,14 @@ function renderCompiler() {
       </div>
       <div class="par-body">
         ${rows}
-        <button type="button" class="btn-add-var comp-add" onclick="addSrc(${m.num})">＋ Agregar fuente</button>
+        <div class="comp-btns">${buttons}</div>
       </div>`;
     cont.appendChild(card);
   });
 }
 
-function addSrc(n) {
-  compData[n].push(emptySrc());
+function addSrc(n, kind) {
+  compData[n].push(emptySrc(n === 5 ? kind : undefined));
   renderCompiler();
   const i = compData[n].length - 1;
   const el = $(`ct_${n}_${i}`);
@@ -1152,13 +1212,16 @@ function addSrc(n) {
 }
 
 function removeSrc(n, i) {
+  const s = compData[n][i];
+  if ((s.t.trim() || s.u.trim() || s.c.trim()) && !confirm('¿Quitar esta fuente?')) return;
   compData[n].splice(i, 1);
-  if (!compData[n].length) compData[n].push(emptySrc());
+  if (n !== 5 && !compData[n].length) compData[n].push(emptySrc());
   renderCompiler();
 }
 
 function buildReport() {
   const v = gv('v1');
+  const crlf = x => x.replace(/\r?\n/g, '\r\n');
   const lines = ['AntoMatic — Compilador DP (Descripción del Problema)'];
   if (v) lines.push('Variable principal: ' + v);
   lines.push('Fecha: ' + new Date().toLocaleDateString('es-PE'), '');
@@ -1166,10 +1229,17 @@ function buildReport() {
   COMP_META.forEach(m => {
     let k = 0;
     compData[m.num].forEach(s => {
-      const t = s.t.trim(), u = s.u.trim();
-      if (!t && !u) return;
+      const t = s.t.trim(), u = s.u.trim(), c = s.c.trim();
+      if (!t && !u && !c) return;
       k++; count++;
-      lines.push('Párrafo ' + m.num + ' - Fuente ' + k, 'Título: ' + t, fieldsFor(m.num).rep + ': ' + u.replace(/\r?\n/g, '\r\n'), '');
+      const head = 'Párrafo ' + m.num + ' - Fuente ' + k + (m.num === 5 ? ' (' + KIND_LABEL[s.k] + ')' : '');
+      if (m.num === 5 && s.k === 'ent') {
+        lines.push(head, 'Título: ' + t, 'Transcripción de la entrevista:', crlf(c), '');
+      } else if (m.num === 5) {
+        lines.push(head, 'Título: ' + t, 'URL: ' + u, 'Contenido:', crlf(c), '');
+      } else {
+        lines.push(head, 'Título: ' + t, 'URL o DOI: ' + u, 'Contenido:', crlf(c), '');
+      }
     });
   });
   return { text: lines.join('\r\n'), count };
@@ -1207,7 +1277,7 @@ function renderArticles() {
     return `
     <div class="art-card${star ? ' star' : ''}">
       <div class="art-head">
-        <span class="art-label">Título del artículo ${i + 1}${star ? '<span class="art-star">⭐ Estrella</span>' : ''}</span>
+        <span class="art-label">Artículo ${i + 1}${star ? '<span class="art-star">⭐ Estrella</span>' : ''}</span>
         <button type="button" class="btn-del-art" title="Borrar este artículo" onclick="removeArt(${i})">🗑 Borrar</button>
       </div>
       <div class="form-field">
@@ -1216,7 +1286,7 @@ function renderArticles() {
                oninput="artData[${i}].t=this.value">
       </div>
       <div class="form-field">
-        <label for="ad_${i}">DOI</label>
+        <label for="ad_${i}">DOI del artículo ${i + 1}${star ? ' (Estrella)' : ''}</label>
         <input type="text" id="ad_${i}" value="${escHtml(a.d)}" placeholder="10.xxxx/xxxxx o https://doi.org/10.xxxx/xxxxx"
                oninput="artData[${i}].d=this.value">
       </div>

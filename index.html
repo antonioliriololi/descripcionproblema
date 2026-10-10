@@ -1077,6 +1077,7 @@ function showStep(n) {
     $('dot' + i).className = 'step-dot' + (i === n ? ' active' : (i < n ? ' done' : ''));
     $('lbl' + i).className = 'step-label' + (i === n ? ' active' : '');
   });
+  if (n === 3) updateCompTitles();
   window.scrollTo(0, 0);
 }
 
@@ -1119,6 +1120,31 @@ function normalizeSrc(n, s) {
   if (s.k === 'ent') return { k: 'ent', t, u: '', c };
   /* versión anterior: el párrafo 5 guardaba la transcripción en "u" */
   return { k: 'ent', t, u: '', c: c || u };
+}
+
+/* ── Títulos de párrafo alimentados desde "Datos del proyecto" ── */
+/* Contracciones: "de el" → "del", "a el" → "al" */
+function conDe(x) { return /^el\s/i.test(x) ? 'del ' + x.replace(/^el\s+/i, '') : 'de ' + x; }
+function conA(x)  { return /^el\s/i.test(x) ? 'al '  + x.replace(/^el\s+/i, '') : 'a '  + x; }
+
+function compTitle(m) {
+  const v1  = gv('v1');
+  if (!v1) return 'Párrafo ' + m.num + ' — ' + m.name;   /* aún sin datos: título genérico */
+  /* Variable del tipo elegido en "Elige el tipo de variable a registrar" */
+  const sel = getTipo() === 'med' ? gv('med_es') : gv('ind_es');
+  const ctx = gv('ctx_es') || 'el contexto organizacional';
+  switch (m.num) {
+    case 1: return 'Párrafo 1 — Definición teórica ' + conDe(v1) + (sel ? ' y, si es posible, agregar la definición ' + conDe(sel) : '');
+    case 2: return 'Párrafo 2 — Situación en el mundo ' + conDe(v1) + (sel ? ' y ' + conDe(sel) : '');
+    case 3: return 'Párrafo 3 — Situación nacional (Perú) respecto ' + conA(v1);
+    case 4: return 'Párrafo 4 — Contribución ' + conDe(v1) + ' en ' + ctx;
+    case 5: return 'Párrafo 5 — Situación local ' + conDe(v1) + ' en ' + (gv('org') || 'la organización') + ' y su contribución en ' + ctx;
+  }
+  return 'Párrafo ' + m.num + ' — ' + m.name;
+}
+
+function updateCompTitles() {
+  COMP_META.forEach(m => { const el = $('ptitle_' + m.num); if (el) el.textContent = compTitle(m); });
 }
 
 function countWords(txt) { const m = String(txt).trim().match(/\S+/g); return m ? m.length : 0; }
@@ -1201,7 +1227,7 @@ function renderCompiler() {
       <div class="par-header">
         <div class="par-header-left">
           <span class="par-tag" style="${m.tagStyle}"><span class="ico">${m.icon}</span>${m.tag}</span>
-          <span class="par-title">Párrafo ${m.num} — ${escHtml(m.name)}</span>
+          <span class="par-title" id="ptitle_${m.num}">${escHtml(compTitle(m))}</span>
         </div>
       </div>
       <div class="par-body">

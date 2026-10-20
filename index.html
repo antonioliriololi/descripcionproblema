@@ -57,6 +57,8 @@
   .steps {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    row-gap: 8px;
     gap: 0;
     padding: 1rem 2rem;
     border-bottom: 1px solid var(--gray-pale);
@@ -74,7 +76,7 @@
   .step-dot.done   { border-color: var(--gray-mid); color: var(--white); background: var(--gray-mid); }
   .step-label { font-size: 12px; color: var(--gray-mid); }
   .step-label.active { color: var(--black); font-weight: 700; }
-  .step-sep { width: 40px; height: 1px; background: var(--gray-light); margin: 0 6px; }
+  .step-sep { width: 28px; height: 1px; background: var(--gray-light); margin: 0 6px; }
 
   /* ── LAYOUT ─────────────────────────────────────────── */
   main { max-width: 820px; margin: 0 auto; padding: 2rem; }
@@ -359,7 +361,7 @@
   }
   .tips-box strong { color: var(--black); }
 
-  /* ── COMPILADOR DP ───────────────────────────────────── */
+  /* ── COMPILADORES (embudo y Vara Horna) ──────────────── */
   .steps .step-item { cursor: pointer; }
   .comp-intro { font-size: 12px; color: var(--gray-dark); line-height: 1.6; margin-bottom: 1rem; }
   .comp-card .par-header { cursor: default; }
@@ -387,6 +389,12 @@
   .lbl-hint { font-weight: 400; color: var(--gray-mid); }
   .comp-footer { margin-top: 1.25rem; }
   .comp-footer .hint-error { margin-top: 0; margin-bottom: 8px; }
+  .vh-block { margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .vh-ej { background: var(--white); border: 1px solid var(--gray-pale); border-left: 4px solid var(--ej-accent, var(--black)); padding: 10px 14px; }
+  .vh-ej-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--gray-mid); margin-bottom: 6px; }
+  .vh-ej p { font-size: 13px; color: var(--gray-dark); line-height: 1.65; margin-bottom: 8px; }
+  .vh-ej p:last-child { margin-bottom: 0; }
+  .vh-sub { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gray-mid); margin: 4px 0 2px; }
 
   /* ── ARTÍCULOS CIENTÍFICOS ───────────────────────────── */
   .art-card {
@@ -419,7 +427,7 @@
     .form-grid { grid-template-columns: 1fr; }
     header { padding: 1rem 1.25rem; }
     .steps { padding: .75rem 1.25rem; }
-    .step-sep { width: 20px; }
+    .step-sep { width: 14px; }
   }
 </style>
 </head>
@@ -443,12 +451,17 @@
   <div class="step-sep"></div>
   <div class="step-item" onclick="gotoStep(3)">
     <div class="step-dot" id="dot3">3</div>
-    <span class="step-label" id="lbl3">Compilador DP</span>
+    <span class="step-label" id="lbl3">Compilador DP, método embudo</span>
   </div>
   <div class="step-sep"></div>
   <div class="step-item" onclick="gotoStep(4)">
     <div class="step-dot" id="dot4">4</div>
-    <span class="step-label" id="lbl4">Colección de Artículos Científicos</span>
+    <span class="step-label" id="lbl4">Compilador DP según Vara Horna</span>
+  </div>
+  <div class="step-sep"></div>
+  <div class="step-item" onclick="gotoStep(5)">
+    <div class="step-dot" id="dot5">5</div>
+    <span class="step-label" id="lbl5">Colección de Artículos Científicos</span>
   </div>
 </div>
 
@@ -614,7 +627,7 @@
       <div class="results-actions">
         <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
         <button class="btn-secondary" onclick="goBack()">← Editar datos</button>
-        <button class="btn-secondary" onclick="gotoStep(3)">Compilador DP →</button>
+        <button class="btn-secondary" onclick="gotoStep(3)">Compilador DP, método embudo →</button>
       </div>
     </div>
 
@@ -633,22 +646,22 @@
   </div><!-- /step2 -->
 
 
-  <!-- ═══════════════════════ PASO 3: COMPILADOR DP ═══════════════════════ -->
+  <!-- ═══════════════════════ PASO 3: COMPILADOR DP, MÉTODO EMBUDO ═══════════════════════ -->
   <div id="step3" style="display:none;">
 
     <div class="results-header">
-      <h2>Compilador DP</h2>
+      <h2>Compilador DP, método embudo</h2>
       <div class="results-actions">
         <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
         <button class="btn-secondary" onclick="gotoStep(2)">← Ecuaciones</button>
-        <button class="btn-secondary" onclick="gotoStep(4)">Artículos científicos →</button>
+        <button class="btn-secondary" onclick="gotoStep(4)">Compilador DP según Vara Horna →</button>
       </div>
     </div>
 
     <div class="session-msg" id="sessionMsg3"></div>
 
     <p class="comp-intro">
-      Registra aquí las fuentes que elegiste para cada párrafo de la Descripción del Problema:
+      Registra aquí las fuentes que elegiste para cada párrafo de la Descripción del Problema (método embudo):
       el <strong>título</strong>, la <strong>URL o DOI</strong> y el <strong>contenido</strong> (texto pegado de unas 400 a 600 palabras).
       Usa <strong>＋ Agregar fuente</strong> si un párrafo tiene más de una. En el Párrafo 5 puedes agregar fuentes de <strong>entrevista</strong> o de <strong>noticia local o regional</strong>. Al final descarga el reporte en .txt.
     </p>
@@ -663,18 +676,49 @@
   </div><!-- /step3 -->
 
 
-  <!-- ═══════════════════════ PASO 4: COMPILADOR DE ARTÍCULOS ═══════════════════════ -->
+  <!-- ═══════════════════════ PASO 4: COMPILADOR DP SEGÚN VARA HORNA ═══════════════════════ -->
   <div id="step4" style="display:none;">
+
+    <div class="results-header">
+      <h2>Compilador DP según Vara Horna</h2>
+      <div class="results-actions">
+        <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
+        <button class="btn-secondary" onclick="gotoStep(3)">← Método embudo</button>
+        <button class="btn-secondary" onclick="gotoStep(5)">Artículos científicos →</button>
+      </div>
+    </div>
+
+    <div class="session-msg" id="sessionMsg4"></div>
+
+    <p class="comp-intro">
+      Estructura de la Descripción del Problema en <strong>cinco párrafos</strong>. La indicación de cada párrafo se completa
+      automáticamente con los datos del <strong>paso 1</strong> (variable principal, otras variables y organización / contexto).
+      Redacta o pega tu párrafo en cada recuadro y, si lo deseas, anota las fuentes. En el Párrafo 3 registra los estudios (si los hubiera).
+      Al final descarga el reporte en .txt.
+    </p>
+
+    <div id="vhContainer"></div>
+
+    <div class="comp-footer">
+      <p class="hint-error" id="vhHint">⚠ Redacta al menos un párrafo (o registra un estudio) para generar el reporte.</p>
+      <button class="btn-primary" style="margin-top:0" onclick="downloadVHReport()">⬇ Generar reporte .txt</button>
+    </div>
+
+  </div><!-- /step4 -->
+
+
+  <!-- ═══════════════════════ PASO 5: COMPILADOR DE ARTÍCULOS ═══════════════════════ -->
+  <div id="step5" style="display:none;">
 
     <div class="results-header">
       <h2>Colección de Artículos Científicos</h2>
       <div class="results-actions">
         <button class="btn-secondary" onclick="saveSession()">💾 Guardar sesión</button>
-        <button class="btn-secondary" onclick="gotoStep(3)">← Compilador DP</button>
+        <button class="btn-secondary" onclick="gotoStep(4)">← Compilador Vara Horna</button>
       </div>
     </div>
 
-    <div class="session-msg" id="sessionMsg4"></div>
+    <div class="session-msg" id="sessionMsg5"></div>
 
     <p class="comp-intro">
       Registra aproximadamente <strong>15 artículos científicos</strong> afines a tu investigación: el <strong>título</strong> y el <strong>DOI</strong> de cada uno (mejor de <strong>ScienceDirect</strong> u otro que recomiende <strong>Antonio Lirio</strong>).
@@ -692,7 +736,7 @@
       <button class="btn-primary" style="margin-top:0" onclick="downloadArtReport()">⬇ Generar reporte .txt</button>
     </div>
 
-  </div><!-- /step4 -->
+  </div><!-- /step5 -->
 
 </main>
 
@@ -754,14 +798,20 @@ function getOtrasEs() {
   return t;
 }
 
+/* Otras variables (independientes y/o mediadora) para el Compilador Vara Horna */
+function getOtrasVH() {
+  const parts = [gv('ind_es'), gv('med_es')].filter(Boolean);
+  return parts.length ? parts.join(' y ') : 'las otras variables';
+}
+
 /* ══════════════════ SESIÓN: GUARDAR / CARGAR (JSON) ══════════════════ */
 const SESSION_APP = 'AntoMatic-Ecuaciones-Problema';
 
 function showSessionMsg(text, ok) {
-  ['sessionMsg', 'sessionMsg2', 'sessionMsg3', 'sessionMsg4'].forEach(id => {
+  ['sessionMsg', 'sessionMsg2', 'sessionMsg3', 'sessionMsg4', 'sessionMsg5'].forEach(id => {
     const m = $(id);
     if (!m) return;
-    const stepEl = m.closest('#step4') || m.closest('#step3') || m.closest('#step2') || m.closest('#step1');
+    const stepEl = m.closest('#step5') || m.closest('#step4') || m.closest('#step3') || m.closest('#step2') || m.closest('#step1');
     const visible = stepEl && stepEl.style.display !== 'none';
     if (!visible) return;
     m.textContent = text;
@@ -774,7 +824,7 @@ function showSessionMsg(text, ok) {
 function collectSession() {
   return {
     app: SESSION_APP,
-    version: 2,
+    version: 3,
     guardado: new Date().toISOString(),
     principal: {
       es: gv('v1'), sinonimoEs: gv('s1'),
@@ -786,6 +836,7 @@ function collectSession() {
     organizacion: gv('org'),
     contribucion: { es: gv('ctx_es'), en: gv('ctx_en') },
     compilador: compData,
+    varaHorna: { esquema: 5, parrafos: vhData, estudios: vhEst },
     articulos: artData
   };
 }
@@ -848,6 +899,22 @@ function loadSession(input) {
             : (n === 5 ? [] : [emptySrc()]);
         });
         renderCompiler();
+      }
+
+      /* Compilador según Vara Horna (sesiones anteriores no lo traen: se deja vacío) */
+      /* Solo se cargan sesiones del esquema actual de 5 párrafos (el esquema anterior de 6 no es compatible) */
+      if (d.varaHorna && typeof d.varaHorna === 'object' && d.varaHorna.esquema === 5) {
+        const p = d.varaHorna.parrafos || {};
+        [1,2,3,4,5].forEach(n => {
+          const x = p[n] || {};
+          vhData[n].c = String(x.c || '');
+          if (n !== 5) vhData[n].r = String(x.r || '');
+          if (n === 4) vhData[n].o = String(x.o || '');
+        });
+        vhEst.length = 0;
+        (Array.isArray(d.varaHorna.estudios) ? d.varaHorna.estudios : []).forEach(e =>
+          vhEst.push({ t: String((e && e.t) || ''), u: String((e && e.u) || ''), c: String((e && e.c) || '') }));
+        renderVH();
       }
 
       if (Array.isArray(d.articulos)) {
@@ -982,7 +1049,7 @@ function generate() {
       title: `Párrafo 5 — Situación local en ${org}`,
       desc: null,
       manual: true,
-      hint: `Describe de forma general —sin ser concluyente— cómo <em>${escHtml(varP5)}</em> ${verboP5} incidiendo en <strong>${escHtml(v1)}</strong> en <em>${escHtml(org)}</em>. Puede ser una situación negativa o positiva que justifique la investigación dentro de <em>${escHtml(ctxEs)}</em>. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda. A este párrafo debe sumarse la síntesis de la o las entrevistas que hayas logrado y agregado en la pestaña <strong>“Compilador DP”</strong>.`
+      hint: `Describe de forma general —sin ser concluyente— cómo <em>${escHtml(varP5)}</em> ${verboP5} incidiendo en <strong>${escHtml(v1)}</strong> en <em>${escHtml(org)}</em>. Puede ser una situación negativa o positiva que justifique la investigación dentro de <em>${escHtml(ctxEs)}</em>. Este párrafo requiere redacción propia; no necesita ecuación de búsqueda. A este párrafo debe sumarse la síntesis de la o las entrevistas que hayas logrado y agregado en la pestaña <strong>“Compilador DP, método embudo”</strong>.`
     }
   ];
 
@@ -1072,12 +1139,13 @@ function generate() {
 
 /* ══════════════════ NAVEGACIÓN ENTRE PESTAÑAS ══════════════════ */
 function showStep(n) {
-  [1, 2, 3, 4].forEach(i => {
+  [1, 2, 3, 4, 5].forEach(i => {
     $('step' + i).style.display = (i === n) ? 'block' : 'none';
     $('dot' + i).className = 'step-dot' + (i === n ? ' active' : (i < n ? ' done' : ''));
     $('lbl' + i).className = 'step-label' + (i === n ? ' active' : '');
   });
   if (n === 3) updateCompTitles();
+  if (n === 4) updateVHTitles();
   window.scrollTo(0, 0);
 }
 
@@ -1094,7 +1162,7 @@ function gotoStep(n) {
 /* ══════════════════ HELPERS ══════════════════ */
 function goBack() { showStep(1); }
 
-/* ══════════════════ COMPILADOR DP ══════════════════ */
+/* ══════════════════ COMPILADOR DP, MÉTODO EMBUDO ══════════════════ */
 const PERU_FLAG = `<svg viewBox="0 0 3 2" aria-label="Perú" role="img"><rect width="3" height="2" fill="#fff"/><rect width="1" height="2" fill="#D91023"/><rect x="2" width="1" height="2" fill="#D91023"/></svg>`;
 const COMP_META = [
   { num:1, tag:'Teoría',       icon:'📖',      tagStyle:'background:#e8f0fe;color:#1a56c4;border:1px solid #c5d8fb;', colors:{ header:'#c9dcfb', body:'#f5f8ff', border:'#a9c6f5', accent:'#1a56c4' }, name:'Definición teórica' },
@@ -1257,7 +1325,7 @@ function removeSrc(n, i) {
 function buildReport() {
   const v = gv('v1');
   const crlf = x => x.replace(/\r?\n/g, '\r\n');
-  const lines = ['AntoMatic — Compilador DP (Descripción del Problema)'];
+  const lines = ['AntoMatic — Compilador DP, método embudo (Descripción del Problema)'];
   if (v) lines.push('Variable principal: ' + v);
   lines.push('Fecha: ' + new Date().toLocaleDateString('es-PE'), '');
   let count = 0;
@@ -1298,6 +1366,195 @@ function downloadReport() {
   document.body.appendChild(a);
   a.click();
   a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ══════════════════ COMPILADOR DP SEGÚN VARA HORNA ══════════════════ */
+const VH_META = [
+  { num:1, tag:'Definición',   icon:'📖', tagStyle:'background:#e8f0fe;color:#1a56c4;border:1px solid #c5d8fb;', colors:{ header:'#c9dcfb', body:'#f5f8ff', border:'#a9c6f5', accent:'#1a56c4' } },
+  { num:2, tag:'Contexto',     icon:'📍', tagStyle:'background:#e6f4ea;color:#1a7a3c;border:1px solid #a8d5b5;', colors:{ header:'#c3e5cc', body:'#f4fbf6', border:'#93cba5', accent:'#1a7a3c' } },
+  { num:3, tag:'Estudios y vacío', icon:'🔬', tagStyle:'background:#f3e8fd;color:#7e22ce;border:1px solid #d8b4fd;', colors:{ header:'#e4cdfa', body:'#faf5ff', border:'#c79bf3', accent:'#7e22ce' } },
+  { num:4, tag:'Objetivo y utilidad', icon:'🎯', tagStyle:'background:#fef7e0;color:#9a6800;border:1px solid #fce09a;', colors:{ header:'#fbe9a6', body:'#fffcf0', border:'#efd070', accent:'#c58a00' } },
+  { num:5, tag:'Pregunta general', icon:'❓', tagStyle:'background:#e0f5f2;color:#0f766e;border:1px solid #8fd3cc;', colors:{ header:'#bfe8e4', body:'#f2fbfa', border:'#8fd3cc', accent:'#0f766e' } }
+];
+/* vhData[n]: c = redacción del párrafo (en el P5, la pregunta general), r = fuentes/referencias (opcional),
+   o = objetivo del estudio (solo P4) */
+const vhData = {
+  1:{ c:'', r:'' }, 2:{ c:'', r:'' }, 3:{ c:'', r:'' },
+  4:{ c:'', r:'', o:'' }, 5:{ c:'' }
+};
+/* Ejemplos de referencia por párrafo (cada ejemplo es una lista de párrafos de texto) */
+const VH_EJ = {
+  1: [
+    ['El Comercio Electrónico en los países desarrollados se sigue incrementando, pero las pequeñas y medianas empresas de los países en desarrollo tienen limitación para ingresar al mismo debido a que no tienen cuenta bancaria o tarjeta internacional para la realización de transacciones, limitando la factibilidad de la concertación de la venta, así como la realización y remisión de la cobranza.'],
+    ['La apertura de los mercados y los procesos de globalización han originado una feroz competencia a nivel mundial. Las empresas buscan ser más eficientes y competitivas a través de una mejora de sus procesos o diferenciación en la calidad de sus productos.']
+  ],
+  2: [
+    ['Al respecto, es necesario identificar alternativas de aplicación de este tipo de negocio, que permita realizar la cobranza internacional y que no genere mucho cargo en las ventas realizadas por las pequeñas y medianas empresas exportadoras de Lima.'],
+    ['Parte de las mejoras de sus procesos implica terminar con el uso ineficiente de la energía eléctrica, la misma que en las empresas textiles del sur de Lima representan hasta el 10 % de los costos de producción.']
+  ],
+  3: [
+    ['Existen muchos estudios sobre el comercio electrónico, sobre todo en los aspectos de seguridad, como los diversos tipos de este, pero no se ha encontrado un estudio que indique o señale si hay alguna manera que permita a las pequeñas y medianas empresas ingresar al mismo, dando a conocer cuáles son los cargos de uso y si tienen alguna opción de poder aminorar estos cobros, permitiéndoles tener un mayor margen de ganancia.',
+     'Sobre estos temas, aún existen vacíos de información. Así, no se sabe aún cómo concretar la venta de productos de exportación, cómo tener la disponibilidad de las cobranzas realizadas, la realización de cobranzas de diversas comisiones tanto por la publicación efectuada, por el uso de herramientas adicionales, por la venta efectuada, por cobranza efectuada, por la realización de la transferencia del dinero.'],
+    ['La imperiosa necesidad que las empresas sean competitivas las obliga a ser eficientes en todos sus procesos, por ello es necesario preguntarnos, ya que representa una parte importante del costo de producción, ¿las empresas textiles del sur de Lima están usando la energía eléctrica de forma eficiente?, y de no ser así, ¿cuáles son las causas que están originando el uso ineficiente de la energía eléctrica?',
+     'La mayoría de las investigaciones realizadas no se han centrado en un determinado tipo de empresa, existen estudios generales de la problemática como el realizado por el Ingeniero Miguel Huaroto Munárez (2007), quien es Consultor en Gestión Energética y cuyo estudio está relacionado a la «Reducción de Costos de Energía Eléctrica en la Industria».',
+     'De mantenerse esta situación las pequeñas y medianas empresas textiles del sur de Lima difícilmente puedan exportar sus productos o ser competitivas en los mercados internacionales.']
+  ],
+  4: [
+    ['Lo que se busca es obtener información con respecto a la opción que se tenga para reducir los montos de las cobranzas realizadas al vendedor de comercio electrónico, de tal manera que perciba un mayor ingreso, buscar alternativa que permita a la pequeña y mediana empresa un mayor margen de ganancia, encontrar una alternativa que permita optimizar el ingreso.',
+     'De lo dicho, la presente investigación pretende identificar y analizar la conveniencia de uso de las diversas herramientas efectivas de cobranza, que podrían aplicarse en la iniciación del comercio electrónico de las pequeñas y medianas empresas de artículos de exportación de Lima.'],
+    ['Por ello, la presente investigación pretende comprobar que en las empresas textiles del sur de Lima no se utiliza en forma eficiente la energía eléctrica y proporcionar las recomendaciones adecuadas para la solución de estos problemas; incluso plantear un sistema de control que nos permita corregir las desviaciones de forma inmediata.']
+  ],
+  5: [
+    ['Así, ante lo anteriormente expuesto, la pregunta principal que guía esta investigación es:',
+     '¿Cuál es la conveniencia de uso de las diversas herramientas efectivas de cobranza, que podrían aplicarse en la iniciación del comercio electrónico de las pequeñas y medianas empresas de artículos de exportación de Lima?'],
+    ['Así, ante lo anteriormente expuesto, la pregunta principal que guía esta investigación es: ¿Cuáles son las causas del uso ineficiente de la energía eléctrica en las empresas textiles del sur de Lima y cuáles son los costos generados en el año 2026?']
+  ]
+};
+
+/* Estudios del Párrafo 3 (si los hubiera): { t: título, u: URL o DOI, c: síntesis } */
+const emptyEst = () => ({ t: '', u: '', c: '' });
+const vhEst = [emptyEst(), emptyEst()];
+
+/* Indicación de cada párrafo, completada con los datos del paso 1 */
+function vhTitle(m) {
+  const v1   = gv('v1')  || 'la variable principal de estudio';
+  const otr  = getOtrasVH();
+  const org  = gv('org') || 'la organización / empresa / contexto';
+  switch (m.num) {
+    case 1: return 'Párrafo 1 — Define brevemente el tema a investigar, es decir, ' + conDe(v1) + ' y cómo es que se considera o ubica en el mundo.';
+    case 2: return 'Párrafo 2 — Ubica el tema en el contexto. Delimita ' + v1 + ' en la realidad del país o localidad.';
+    case 3: return 'Párrafo 3 — Describe un par de estudios previos (artículos científicos) que tratan sobre ' + v1 + ' y, lo más importante, cómo es que este tema representa un vacío en el conocimiento porque todavía no se ha abordado suficientemente el tema de cómo ' + otr + ' explica ' + v1 + '.';
+    case 4: return 'Párrafo 4 — Indica lo que pretendes realizar mencionando el objetivo y la posible utilidad del estudio en ' + org + '.';
+    case 5: return 'Párrafo 5 — Formula mediante una pregunta general que sintetice lo que pretendes investigar.';
+  }
+  return 'Párrafo ' + m.num;
+}
+
+function updateVHTitles() {
+  VH_META.forEach(m => { const el = $('vtitle_' + m.num); if (el) el.textContent = vhTitle(m); });
+}
+
+function vhWc(txt) { const w = countWords(txt); return w + ' palabra' + (w === 1 ? '' : 's'); }
+function onVH(n, el) {
+  vhData[n].c = el.value;
+  const w = $('vwc_' + n);
+  if (w) w.textContent = vhWc(el.value);
+}
+
+function estHtml(e, i) {
+  return `
+      <div class="comp-src">
+        <div class="comp-src-head">
+          <span class="comp-src-label">Estudio ${i + 1}</span>
+          <button type="button" class="btn-remove-src" title="Quitar este estudio" onclick="removeEst(${i})">✕</button>
+        </div>
+        ${fieldHtml(`ve_t_${i}`, 'Título del estudio', e.t, 'Título completo del estudio', `vhEst[${i}].t=this.value`)}
+        ${fieldHtml(`ve_u_${i}`, 'URL o DOI', e.u, 'https://... o 10.xxxx/xxxxx', `vhEst[${i}].u=this.value`)}
+        ${fieldHtml(`ve_c_${i}`, 'Síntesis del estudio (objetivo, muestra y hallazgos principales)', e.c, 'Resume aquí el estudio...', `vhEst[${i}].c=this.value`, { area:true })}
+      </div>`;
+}
+
+function renderVH() {
+  const cont = $('vhContainer');
+  cont.innerHTML = '';
+  VH_META.forEach(m => {
+    const d = vhData[m.num];
+    const c = m.colors;
+    let body = '';
+
+    if (m.num === 3) {
+      body += `<div class="vh-sub">Estudios (si los hubiera)</div>`;
+      body += vhEst.length
+        ? vhEst.map((e, i) => estHtml(e, i)).join('')
+        : `<p class="comp-empty">No hay estudios registrados. Si no existen, indícalo en tu redacción.</p>`;
+      body += `<div class="comp-btns"><button type="button" class="btn-add-var comp-add" onclick="addEst()">＋ Agregar estudio</button></div>`;
+      body += `<div class="vh-sub">Redacción</div>`;
+    }
+
+    if (m.num === 4) {
+      body += fieldHtml('vo_4', 'Objetivo general del estudio', d.o,
+        'Ej. Determinar la influencia de ... en ...', 'vhData[4].o=this.value');
+    }
+
+    const esP5 = m.num === 5;
+    body += fieldHtml(`vc_${m.num}`, esP5 ? 'Pregunta general del estudio' : 'Redacción del párrafo ' + m.num, d.c,
+      esP5 ? '¿...?' : 'Escribe o pega aquí el párrafo ' + m.num + '...', `onVH(${m.num},this)`,
+      { area:true, tall:!esP5, extra:`<span class="wc" id="vwc_${m.num}">${vhWc(d.c)}</span>` });
+
+    if (m.num !== 3 && !esP5) {
+      body += fieldHtml(`vr_${m.num}`, 'Fuentes o referencias <span class="lbl-hint">(opcional)</span>', d.r,
+        'Autor (año), título, URL o DOI', `vhData[${m.num}].r=this.value`);
+    }
+
+    /* Ejemplos de referencia debajo de cada párrafo */
+    body += '<div class="vh-sub">Ejemplos de referencia</div>' +
+      (VH_EJ[m.num] || []).map((ej, k) => `
+        <div class="vh-ej" style="--ej-accent:${c.accent};">
+          <div class="vh-ej-title">Ejemplo ${k + 1}</div>
+          ${ej.map(p => `<p>${escHtml(p)}</p>`).join('')}
+        </div>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'par-card comp-card';
+    card.setAttribute('style', `--pc-header:${c.header};--pc-body:${c.body};--pc-border:${c.border};--pc-accent:${c.accent};`);
+    card.innerHTML = `
+      <div class="par-header">
+        <div class="par-header-left">
+          <span class="par-tag" style="${m.tagStyle}"><span class="ico">${m.icon}</span>${m.tag}</span>
+          <span class="par-title" id="vtitle_${m.num}">${escHtml(vhTitle(m))}</span>
+        </div>
+      </div>
+      <div class="par-body"><div class="vh-block">${body}</div></div>`;
+    cont.appendChild(card);
+  });
+}
+
+function addEst() {
+  vhEst.push(emptyEst());
+  renderVH();
+  const el = $('ve_t_' + (vhEst.length - 1));
+  if (el) el.focus();
+}
+
+function removeEst(i) {
+  const e = vhEst[i];
+  if ((e.t.trim() || e.u.trim() || e.c.trim()) && !confirm('¿Quitar este estudio?')) return;
+  vhEst.splice(i, 1);
+  renderVH();
+}
+
+function downloadVHReport() {
+  const v = gv('v1');
+  const crlf = x => x.replace(/\r?\n/g, '\r\n');
+  const lines = ['AntoMatic — Compilador DP según Vara Horna (Descripción del Problema)'];
+  if (v) lines.push('Variable principal: ' + v);
+  lines.push('Fecha: ' + new Date().toLocaleDateString('es-PE'), '');
+  let count = 0;
+  VH_META.forEach(m => {
+    const d = vhData[m.num];
+    const est = m.num === 3 ? vhEst.filter(e => e.t.trim() || e.u.trim() || e.c.trim()) : [];
+    const has = d.c.trim() || (d.r || '').trim() || (m.num === 4 && d.o.trim()) || est.length;
+    if (!has) return;
+    count++;
+    lines.push(vhTitle(m), '');
+    est.forEach((e, i) => {
+      lines.push('Estudio ' + (i + 1), 'Título: ' + e.t.trim(), 'URL o DOI: ' + e.u.trim(), 'Síntesis:', crlf(e.c.trim()), '');
+    });
+    if (m.num === 4 && d.o.trim()) lines.push('Objetivo general del estudio: ' + d.o.trim(), '');
+    if (d.c.trim()) lines.push(m.num === 5 ? 'Pregunta general del estudio:' : 'Redacción:', crlf(d.c.trim()), '');
+    if ((d.r || '').trim()) lines.push('Fuentes o referencias: ' + crlf(d.r.trim()), '');
+  });
+  if (!count) { $('vhHint').style.display = 'block'; return; }
+  $('vhHint').style.display = 'none';
+  const slug = (v || 'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'reporte';
+  const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const el = document.createElement('a');
+  el.href = url;
+  el.download = `antomatic-vara-horna-${slug}-${new Date().toISOString().slice(0, 10)}.txt`;
+  document.body.appendChild(el); el.click(); el.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
@@ -1405,6 +1662,7 @@ function updateCtxLabels() {
 }
 updateOtrasStatus();
 renderCompiler();
+renderVH();
 renderArticles();
 $('v1').addEventListener('input',   updateCtxLabels);
 $('v1en').addEventListener('input', updateCtxLabels);

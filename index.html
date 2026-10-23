@@ -413,6 +413,30 @@
   }
   .btn-del-art:hover { border-color: #c0392b; color: #c0392b; }
 
+  /* ── CÓDIGO DE COLORES DE VARIABLES ──────────────────── */
+  :root { --c-main:#2fac66; --c-ind:#e30613; --c-med:#f28c00; }
+
+  .model-fig { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--gray-pale); }
+  .model-svg { display:block; width:100%; max-width:260px; height:auto; margin:0 auto; }
+  .model-svg .main  { fill: var(--c-main); }
+  .model-svg .ind   { fill: var(--c-ind); }
+  .model-svg .med   { fill: var(--c-med); }
+  .model-svg .arw   { fill: #575656; }
+  .model-svg .frame { fill:none; stroke:#2d2e83; stroke-miterlimit:10; }
+
+  .model-legend { display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center; margin-top:8px; font-size:12px; color:var(--gray-dark); }
+  .model-legend span { display:inline-flex; align-items:center; gap:6px; }
+
+  .dot { display:inline-block; width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+  .dot-main { background: var(--c-main); }
+  .dot-ind  { background: var(--c-ind); }
+  .dot-med  { background: var(--c-med); }
+
+  .form-section-title .dot { margin-right:7px; vertical-align:-1px; }
+  .card-main { border-left: 5px solid var(--c-main); }
+  #grp_ind   { border-left: 5px solid var(--c-ind); }
+  #grp_med   { border-left: 5px solid var(--c-med); }
+
   /* ── FOOTER ──────────────────────────────────────────── */
   footer {
     border-top: 1px solid var(--gray-pale);
@@ -485,8 +509,47 @@
     <div class="session-msg" id="sessionMsg"></div>
 
     <!-- Variable principal -->
-    <div class="form-card">
-      <div class="form-section-title">Variable principal de estudio</div>
+    <div class="form-card card-main">
+
+      <!-- Modelo con código de colores (SVG incrustado) -->
+      <div class="model-fig">
+        <svg class="model-svg" viewBox="0 0 414 182" xmlns="http://www.w3.org/2000/svg" role="img"
+             aria-label="Modelo: variables independientes (rojo), mediadora (naranja) y principal (verde)">
+          <rect class="frame" x="43.23" y="0.5" width="370.11" height="179.62"/>
+          <line class="frame" x1="272.25" y1="0.2" x2="272.25" y2="181.03"/>
+
+          <!-- Modelo con mediadora -->
+          <circle class="ind"  cx="84.51"  cy="44.77"  r="18.89"/>
+          <circle class="ind"  cx="84.51"  cy="96.38"  r="18.89"/>
+          <circle class="ind"  cx="84.51"  cy="144.24" r="18.89"/>
+          <circle class="med"  cx="151.18" cy="95.91"  r="18.89"/>
+          <circle class="main" cx="239.89" cy="95.91"  r="18.89"/>
+
+          <!-- Modelo sin mediadora -->
+          <circle class="ind"  cx="311.42" cy="42.96"  r="18.89"/>
+          <circle class="ind"  cx="311.42" cy="94.57"  r="18.89"/>
+          <circle class="ind"  cx="311.42" cy="142.42" r="18.89"/>
+          <circle class="main" cx="378.09" cy="94.1"   r="18.89"/>
+
+          <!-- Flechas -->
+          <g class="arw" transform="translate(-49.09 -90.63)">
+            <path d="M268.86,186.54l-4.32-3v2.75h-47v1h47v2.34C266,188.57,267.41,187.56,268.86,186.54Z"/>
+            <path d="M184.88,170.88l-5.27-.08,1.62-2.22-38-27.6.58-.8,38,27.6,1.37-1.9Z"/>
+            <path d="M186.87,204.47l-5.27.08,1.61,2.22-38,27.6.58.8,38-27.6,1.38,1.9C185.73,207.8,186.3,206.14,186.87,204.47Z"/>
+            <path d="M179.16,186.67l-2.27-3v2.75H152.08v1h24.81v2.34Z"/>
+            <path d="M411.79,169.07l-5.27-.08,1.61-2.22-38-27.6.59-.8,38,27.59,1.37-1.89Z"/>
+            <path d="M413.77,202.66l-5.27.08,1.62,2.22-38,27.59.58.81,38-27.6,1.37,1.9Z"/>
+            <path d="M406.07,184.86l-2.28-3v2.74H379v1h24.8v2.33C404.56,186.89,405.31,185.88,406.07,184.86Z"/>
+          </g>
+        </svg>
+        <div class="model-legend">
+          <span><i class="dot dot-main"></i>Variable principal de estudio</span>
+          <span><i class="dot dot-ind"></i>Principales variables independientes</span>
+          <span><i class="dot dot-med"></i>Variable mediadora</span>
+        </div>
+      </div>
+
+      <div class="form-section-title"><i class="dot dot-main"></i>Variable principal de estudio</div>
 
       <!-- Español (amarillo) -->
       <div class="lang-block lang-es">
@@ -526,8 +589,8 @@
       <div class="form-field" style="margin-bottom:12px;">
         <label id="lblTipoOtras">Elige el tipo de variable a registrar</label>
         <div class="radio-group" role="radiogroup" aria-labelledby="lblTipoOtras">
-          <label class="radio-opt"><input type="radio" name="tipoOtras" value="ind" checked onchange="toggleTipoOtras()"> Principales variables independientes</label>
-          <label class="radio-opt"><input type="radio" name="tipoOtras" value="med" onchange="toggleTipoOtras()"> Nombre de la variable mediadora</label>
+          <label class="radio-opt"><input type="radio" name="tipoOtras" value="ind" checked onchange="toggleTipoOtras()"> <i class="dot dot-ind"></i> Principales variables independientes</label>
+          <label class="radio-opt"><input type="radio" name="tipoOtras" value="med" onchange="toggleTipoOtras()"> <i class="dot dot-med"></i> Nombre de la variable mediadora</label>
         </div>
       </div>
 
@@ -836,7 +899,7 @@ function collectSession() {
     organizacion: gv('org'),
     contribucion: { es: gv('ctx_es'), en: gv('ctx_en') },
     compilador: compData,
-    varaHorna: { esquema: 5, parrafos: vhData, estudios: vhEst },
+    varaHorna: { esquema: 5, parrafos: vhData, estudios: vhEst, fuentes: vhSrc },
     articulos: artData
   };
 }
@@ -914,6 +977,13 @@ function loadSession(input) {
         vhEst.length = 0;
         (Array.isArray(d.varaHorna.estudios) ? d.varaHorna.estudios : []).forEach(e =>
           vhEst.push({ t: String((e && e.t) || ''), u: String((e && e.u) || ''), c: String((e && e.c) || '') }));
+        /* Fuentes por párrafo (las sesiones anteriores solo traían un texto "r": se convierte en una fuente) */
+        const fu = d.varaHorna.fuentes || {};
+        [1,2,3,4,5].forEach(n => {
+          const arr = Array.isArray(fu[n]) ? fu[n].map(s => ({ t: String((s && s.t) || ''), u: String((s && s.u) || ''), c: String((s && s.c) || '') })) : [];
+          if (!arr.length && vhData[n].r) arr.push({ t: vhData[n].r, u: '', c: '' });
+          vhSrc[n] = arr.length ? arr : [emptySrc()];
+        });
         renderVH();
       }
 
@@ -1416,6 +1486,9 @@ const VH_EJ = {
 const emptyEst = () => ({ t: '', u: '', c: '' });
 const vhEst = [emptyEst(), emptyEst()];
 
+/* Fuentes de cada párrafo (botón "＋ Agregar fuente"): { t: título, u: URL o DOI, c: contenido } */
+const vhSrc = { 1:[emptySrc()], 2:[emptySrc()], 3:[emptySrc()], 4:[emptySrc()], 5:[emptySrc()] };
+
 /* Indicación de cada párrafo, completada con los datos del paso 1 */
 function vhTitle(m) {
   const v1   = gv('v1')  || 'la variable principal de estudio';
@@ -1482,10 +1555,10 @@ function renderVH() {
       esP5 ? '¿...?' : 'Escribe o pega aquí el párrafo ' + m.num + '...', `onVH(${m.num},this)`,
       { area:true, tall:!esP5, extra:`<span class="wc" id="vwc_${m.num}">${vhWc(d.c)}</span>` });
 
-    if (m.num !== 3 && !esP5) {
-      body += fieldHtml(`vr_${m.num}`, 'Fuentes o referencias <span class="lbl-hint">(opcional)</span>', d.r,
-        'Autor (año), título, URL o DOI', `vhData[${m.num}].r=this.value`);
-    }
+    /* Fuentes del párrafo, con botón "＋ Agregar fuente" */
+    body += '<div class="vh-sub">Fuentes o referencias <span class="lbl-hint">(opcional)</span></div>';
+    body += vhSrc[m.num].map((s, i) => vsrcHtml(m.num, s, i)).join('');
+    body += `<div class="comp-btns"><button type="button" class="btn-add-var comp-add" onclick="addVSrc(${m.num})">＋ Agregar fuente</button></div>`;
 
     /* Ejemplos de referencia debajo de cada párrafo */
     body += '<div class="vh-sub">Ejemplos de referencia</div>' +
@@ -1524,6 +1597,34 @@ function removeEst(i) {
   renderVH();
 }
 
+function vsrcHtml(n, s, i) {
+  return `
+      <div class="comp-src">
+        <div class="comp-src-head">
+          <span class="comp-src-label">Párrafo ${n} - Fuente ${i + 1}</span>
+          <button type="button" class="btn-remove-src" title="Quitar esta fuente" onclick="removeVSrc(${n},${i})">✕</button>
+        </div>
+        ${fieldHtml(`vs_t_${n}_${i}`, 'Título', s.t, 'Título del documento o de la página', `vhSrc[${n}][${i}].t=this.value`)}
+        ${fieldHtml(`vs_u_${n}_${i}`, 'URL o DOI', s.u, 'https://... o 10.xxxx/xxxxx', `vhSrc[${n}][${i}].u=this.value`)}
+        ${fieldHtml(`vs_c_${n}_${i}`, 'Contenido <span class="lbl-hint">(opcional)</span>', s.c, 'Pega aquí el texto de la fuente...', `vhSrc[${n}][${i}].c=this.value`, { area:true })}
+      </div>`;
+}
+
+function addVSrc(n) {
+  vhSrc[n].push(emptySrc());
+  renderVH();
+  const el = $(`vs_t_${n}_${vhSrc[n].length - 1}`);
+  if (el) el.focus();
+}
+
+function removeVSrc(n, i) {
+  const s = vhSrc[n][i];
+  if ((s.t.trim() || s.u.trim() || s.c.trim()) && !confirm('¿Quitar esta fuente?')) return;
+  vhSrc[n].splice(i, 1);
+  if (!vhSrc[n].length) vhSrc[n].push(emptySrc());
+  renderVH();
+}
+
 function downloadVHReport() {
   const v = gv('v1');
   const crlf = x => x.replace(/\r?\n/g, '\r\n');
@@ -1534,7 +1635,8 @@ function downloadVHReport() {
   VH_META.forEach(m => {
     const d = vhData[m.num];
     const est = m.num === 3 ? vhEst.filter(e => e.t.trim() || e.u.trim() || e.c.trim()) : [];
-    const has = d.c.trim() || (d.r || '').trim() || (m.num === 4 && d.o.trim()) || est.length;
+    const fu = vhSrc[m.num].filter(s => s.t.trim() || s.u.trim() || s.c.trim());
+    const has = d.c.trim() || fu.length || (m.num === 4 && d.o.trim()) || est.length;
     if (!has) return;
     count++;
     lines.push(vhTitle(m), '');
@@ -1543,7 +1645,11 @@ function downloadVHReport() {
     });
     if (m.num === 4 && d.o.trim()) lines.push('Objetivo general del estudio: ' + d.o.trim(), '');
     if (d.c.trim()) lines.push(m.num === 5 ? 'Pregunta general del estudio:' : 'Redacción:', crlf(d.c.trim()), '');
-    if ((d.r || '').trim()) lines.push('Fuentes o referencias: ' + crlf(d.r.trim()), '');
+    fu.forEach((s, i) => {
+      lines.push('Párrafo ' + m.num + ' - Fuente ' + (i + 1), 'Título: ' + s.t.trim(), 'URL o DOI: ' + s.u.trim());
+      if (s.c.trim()) lines.push('Contenido:', crlf(s.c.trim()));
+      lines.push('');
+    });
   });
   if (!count) { $('vhHint').style.display = 'block'; return; }
   $('vhHint').style.display = 'none';
